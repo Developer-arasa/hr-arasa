@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Form Izin Karyawan</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; max-width: 400px; margin: auto; }
+    input, textarea, button { width: 100%; margin-bottom: 15px; padding: 10px; box-sizing: border-box; }
+    button { background: #007BFF; color: white; border: none; cursor: pointer; }
+  </style>
+</head>
+<body>
+
+  <h2>Form Izin Karyawan</h2>
+  <form id="formIzin">
+    <input type="text" id="id_karyawan" placeholder="ID Karyawan" required list="listId">
+    <datalist id="listId"></datalist>
+
+    <input type="text" id="nama_karyawan" placeholder="Nama Karyawan" required list="listNama">
+    <datalist id="listNama"></datalist>
+
+    <input type="date" id="tanggal" required>
+    <textarea id="alasan" placeholder="Alasan Izin" rows="4" required></textarea>
+    
+    <button type="submit" id="btnSubmit">Kirim Izin</button>
+  </form>
+
+  <script>
+    const GAS_URL = 'https://script.google.com/macros/s/AKfycbxNEo-G-tIgjE5AnZPTWMwBNc9MM98FQ4eLXVX5MMydDdFdv48hQUUQN-Y9JGQEe8ljOA/exec';
+    let dataKaryawan = [];
+
+    // Ambil data dari GAS saat web dimuat
+    window.onload = async () => {
+      try {
+        const response = await fetch(GAS_URL);
+        dataKaryawan = await response.json();
+        
+        // Isi datalist untuk suggestion/autocomplete
+        const listId = document.getElementById('listId');
+        const listNama = document.getElementById('listNama');
+        
+        dataKaryawan.forEach(k => {
+          listId.innerHTML += `<option value="${k.ID}">`;
+          listNama.innerHTML += `<option value="${k.Nama}">`;
+        });
+      } catch (err) {
+        console.error("Gagal load data: ", err);
+      }
+    };
+
+    // Auto-fill Nama jika ID diisi
+    document.getElementById('id_karyawan').addEventListener('input', (e) => {
+      const match = dataKaryawan.find(k => k.ID == e.target.value);
+      if (match) document.getElementById('nama_karyawan').value = match.Nama;
+    });
+
+    // Auto-fill ID jika Nama diisi
+    document.getElementById('nama_karyawan').addEventListener('input', (e) => {
+      const match = dataKaryawan.find(k => k.Nama.toLowerCase() == e.target.value.toLowerCase());
+      if (match) document.getElementById('id_karyawan').value = match.ID;
+    });
+
+    // Handle Submit Form
+    document.getElementById('formIzin').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('btnSubmit');
+      btn.innerText = 'Mengirim...';
+      btn.disabled = true;
+
+      const payload = {
+        id: document.getElementById('id_karyawan').value,
+        nama: document.getElementById('nama_karyawan').value,
+        tanggal: document.getElementById('tanggal').value,
+        alasan: document.getElementById('alasan').value
+      };
+
+      try {
+        // Gunakan mode 'no-cors' agar Vercel tidak diblokir oleh Google
+        await fetch(GAS_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        alert('Data izin berhasil dikirim!');
+        e.target.reset();
+      } catch (err) {
+        alert('Gagal mengirim data!');
+      } finally {
+        btn.innerText = 'Kirim Izin';
+        btn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
