@@ -3,9 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Arasa Store - Employee Portal</title>
+  <title>Arasa Store - Form Izin</title>
   <style>
-    /* CSS DETAIL: Mengacu pada visual Hijau Kupa */
     :root { --primary: #317c56; --bg: #f8f9fa; --text: #2d3436; }
     body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; justify-content: center; }
     .mobile-frame { background: white; width: 100%; max-width: 450px; min-height: 100vh; padding: 30px 20px; box-sizing: border-box; }
@@ -15,17 +14,19 @@
     
     .form-group { margin-bottom: 20px; }
     label { display: block; font-size: 12px; font-weight: 700; color: #636e72; text-transform: uppercase; margin-bottom: 8px; }
-    select, input, textarea { width: 100%; padding: 14px; border: 1.5px solid #eee; border-radius: 12px; font-size: 15px; box-sizing: border-box; outline: none; background: #fafafa; }
+    select, input, textarea { width: 100%; padding: 14px; border: 1.5px solid #eee; border-radius: 12px; font-size: 14px; box-sizing: border-box; outline: none; background: #fafafa; }
     select:focus, input:focus { border-color: var(--primary); background: white; }
     
     .date-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
     
     button { width: 100%; padding: 16px; background: var(--primary); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 10px; transition: 0.3s; }
-    button:active { transform: scale(0.98); }
+    button:disabled { background: #90bda3; cursor: not-allowed; }
 
-    /* History Style */
-    .history-card { padding: 15px; border-radius: 12px; border: 1px solid #eee; margin-bottom: 12px; position: relative; }
-    .status-badge { position: absolute; top: 15px; right: 15px; font-size: 10px; font-weight: 800; padding: 4px 8px; border-radius: 6px; }
+    /* CSS History Card */
+    .history-card { padding: 15px; border-radius: 12px; border: 1px solid #eee; margin-bottom: 12px; position: relative; background: #fff; }
+    .status-badge { position: absolute; top: 15px; right: 15px; font-size: 10px; font-weight: 800; padding: 4px 8px; border-radius: 6px; text-transform: uppercase; }
+    
+    /* Warna Status Sesuai Spreadsheet */
     .PENDING { background: #fff3cd; color: #856404; }
     .IZIN_DIBERIKAN { background: #d4edda; color: #155724; }
     .IZIN_TIDAK_DIBERIKAN { background: #f8d7da; color: #721c24; }
@@ -37,126 +38,166 @@
   <div class="brand-area">
     <div class="brand-logo">A</div>
     <h2 style="margin:0">HR Arasa Store</h2>
-    <p style="color:#636e72; font-size: 14px;">Form Perizinan Karyawan</p>
+    <p style="color:#636e72; font-size: 14px;">Portal Perizinan Karyawan</p>
   </div>
 
   <form id="izinForm">
     <div class="form-group">
       <label>ID Karyawan</label>
-      <select id="sel_id"><option value="">Pilih ID</option></select>
+      <select id="sel_id" required><option value="">Pilih ID</option></select>
     </div>
 
     <div class="form-group">
       <label>Nama Karyawan</label>
-      <select id="sel_nama"><option value="">Pilih Nama</option></select>
+      <select id="sel_nama" required><option value="">Pilih Nama</option></select>
     </div>
 
     <div class="date-grid">
       <div class="form-group">
-        <label>Mulai</label>
+        <label>Tgl Mulai</label>
         <input type="date" id="tgl_mulai" required>
       </div>
       <div class="form-group">
-        <label>Akhir</label>
+        <label>Tgl Akhir</label>
         <input type="date" id="tgl_akhir" required>
       </div>
     </div>
 
     <div class="form-group">
       <label>Alasan Izin</label>
-      <textarea id="alasan" rows="3" placeholder="Jelaskan alasan Paduka..." required></textarea>
+      <textarea id="alasan" rows="3" placeholder="Sakit, keperluan keluarga, dll." required></textarea>
     </div>
 
     <button type="submit" id="btnSubmit">Kirim Pengajuan</button>
   </form>
 
-  <div id="historyBox" style="margin-top:40px; display:none;">
-    <h3 style="font-size:16px;">Riwayat Perizinan</h3>
-    <div id="listHistory"></div>
+  <div id="historyBox" style="margin-top:40px;">
+    <h3 style="font-size:16px; border-bottom: 2px solid #eee; padding-bottom: 10px;">Semua Riwayat Izin</h3>
+    <div id="listHistory" style="margin-top: 15px;">Loading data...</div>
   </div>
 </div>
 
 <script>
-  const API_URL = 'URL_GAS_PADUKA';
+  // PASTIKAN URL INI MILIK GAS PADUKA YANG TERBARU
+  const API_URL = 'https://script.google.com/macros/s/AKfycbxNEo-G-tIgjE5AnZPTWMwBNc9MM98FQ4eLXVX5MMydDdFdv48hQUUQN-Y9JGQEe8ljOA/exec';
+  
   let master = [];
   let history = [];
 
-  // 1. Inisialisasi Data
+  // ==========================================
+  // 1. PROSES LOAD AWAL (Deconstruct API)
+  // ==========================================
   window.onload = async () => {
-    const res = await fetch(API_URL);
-    const data = await res.json();
-    master = data.master;
-    history = data.history;
+    try {
+      const res = await fetch(API_URL);
+      const data = await res.json();
+      master = data.master || [];
+      history = data.history || [];
 
-    const selId = document.getElementById('sel_id');
-    const selNama = document.getElementById('sel_nama');
+      const selId = document.getElementById('sel_id');
+      const selNama = document.getElementById('sel_nama');
 
-    master.forEach(k => {
-      selId.innerHTML += `<option value="${k.ID}">${k.ID}</option>`;
-      selNama.innerHTML += `<option value="${k.ID}">${k.NAMA}</option>`; // Value disamakan dengan ID untuk sync
-    });
+      // LOOP MASTER DATA
+      // Bedah Detail: Sekarang kita panggil k.ID_KARYAWAN dan k.NAMA_KARYAWAN
+      // sesuai dengan header di Sheet "Master_data" Paduka
+      master.forEach(k => {
+        if(k.ID_KARYAWAN && k.NAMA_KARYAWAN) {
+          selId.innerHTML += `<option value="${k.ID_KARYAWAN}">${k.ID_KARYAWAN}</option>`;
+          selNama.innerHTML += `<option value="${k.ID_KARYAWAN}">${k.NAMA_KARYAWAN}</option>`;
+        }
+      });
+
+      // Eksekusi fungsi render history saat web selesai diload
+      renderHistory();
+
+    } catch (error) {
+      document.getElementById('listHistory').innerHTML = '<p style="color:red;">Gagal mengambil data dari server.</p>';
+    }
   };
 
-  // 2. Logika Sinkronisasi Dropdown
+  // ==========================================
+  // 2. LOGIKA SINKRONISASI DROPDOWN (Auto-Fill)
+  // ==========================================
+  // Jika ID dipilih, ubah value dari dropdown Nama agar sama dengan ID tersebut
   document.getElementById('sel_id').addEventListener('change', (e) => {
     document.getElementById('sel_nama').value = e.target.value;
-    renderHistory(e.target.value);
   });
 
+  // Jika Nama dipilih, ubah value dari dropdown ID agar sama dengan Nama tersebut
   document.getElementById('sel_nama').addEventListener('change', (e) => {
     document.getElementById('sel_id').value = e.target.value;
-    renderHistory(e.target.value);
   });
 
-  // 3. Render Riwayat Berdasarkan User Terpilih
-  function renderHistory(userId) {
-    const box = document.getElementById('historyBox');
+  // ==========================================
+  // 3. FUNGSI RENDER HISTORY GLOBAL (Semua Karyawan)
+  // ==========================================
+  function renderHistory() {
     const list = document.getElementById('listHistory');
     list.innerHTML = '';
 
-    if (!userId) { box.style.display = 'none'; return; }
+    if (history.length === 0) {
+      list.innerHTML = '<div style="text-align:center; color:#999; font-size:13px;">Belum ada riwayat izin yang diajukan.</div>';
+      return;
+    }
     
-    // Filter history berdasarkan ID KARYAWAN (Key di JSON otomatis jadi ID_KARYAWAN)
-    const userHistory = history.filter(h => h.ID_KARYAWAN === userId);
-    box.style.display = 'block';
-
-    userHistory.reverse().forEach(h => {
-      // Normalisasi status untuk CSS class (Spasi jadi Underscore)
-      const statusClass = h.STATUS_IZIN.replace(/\s+/g, '_');
+    // Bedah Detail: Tidak ada lagi fitur "filter()", 
+    // jadi semua data dari sheet "Data_izin" langsung ditampilkan dan di reverse (terbaru di atas)
+    history.reverse().forEach(h => {
       
+      // Ambil status, hapus spasinya (PENDING, IZIN_DIBERIKAN, IZIN_TIDAK_DIBERIKAN) untuk CSS Class
+      const statusValue = h.STATUS_IZIN ? h.STATUS_IZIN : 'PENDING';
+      const statusClass = statusValue.replace(/\s+/g, '_');
+      
+      // Bedah Detail: Mengambil header NAMA, ID_KARYAWAN, TANGGAL_IZIN_MULAI dari sheet "Data_izin"
+      // Kolom Alasan sudah dihilangkan dari tampilan UI sesuai perintah.
       list.innerHTML += `
         <div class="history-card">
-          <span class="status-badge ${statusClass}">${h.STATUS_IZIN}</span>
-          <div style="font-weight:700; font-size:14px;">${h.TANGGAL_IZIN_MULAI} s/d ${h.TANGGAL_IZIN_AKHIR}</div>
-          <div style="font-size:12px; color:#636e72; margin-top:5px;">${h.ALASAN}</div>
+          <span class="status-badge ${statusClass}">${statusValue}</span>
+          <div style="font-weight:700; font-size:14px; margin-bottom: 5px; padding-right: 90px;">
+            ${h.NAMA || '-'} <span style="color:#a4b0be; font-size:12px;">(#${h.ID_KARYAWAN || '-'})</span>
+          </div>
+          <div style="font-size:12px; color:#636e72; font-weight: 500;">
+            📅 ${h.TANGGAL_IZIN_MULAI || '-'} s/d ${h.TANGGAL_IZIN_AKHIR || '-'}
+          </div>
         </div>
       `;
     });
   }
 
-  // 4. Submit Data
+  // ==========================================
+  // 4. SUBMIT FORM KE SPREADSHEET
+  // ==========================================
   document.getElementById('izinForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const btn = document.getElementById('btnSubmit');
     btn.disabled = true;
-    btn.innerText = 'Memproses...';
+    btn.innerText = 'Mengirim Data...';
+
+    // Ambil text dari dropdown nama yang terpilih (bukan valuenya)
+    const selNamaElement = document.getElementById('sel_nama');
+    const namaText = selNamaElement.options[selNamaElement.selectedIndex].text;
 
     const payload = {
       id: document.getElementById('sel_id').value,
-      nama: document.getElementById('sel_nama').options[document.getElementById('sel_nama').selectedIndex].text,
+      nama: namaText,
       tgl_mulai: document.getElementById('tgl_mulai').value,
       tgl_akhir: document.getElementById('tgl_akhir').value,
       alasan: document.getElementById('alasan').value
     };
 
-    await fetch(API_URL, {
-      method: 'POST',
-      mode: 'no-cors',
-      body: JSON.stringify(payload)
-    });
-
-    alert('Pengajuan Berhasil Dikirim!');
-    location.reload();
+    try {
+      await fetch(API_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        body: JSON.stringify(payload)
+      });
+      alert('Pengajuan Izin Berhasil Dikirim!');
+      location.reload(); // Refresh halaman agar history langsung terupdate
+    } catch (error) {
+      alert('Terjadi kesalahan saat mengirim data.');
+      btn.disabled = false;
+      btn.innerText = 'Kirim Pengajuan';
+    }
   });
 </script>
 
