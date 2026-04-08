@@ -28,6 +28,8 @@
     .PENDING { background: #fff3cd; color: #856404; }
     .IZIN_DIBERIKAN { background: #d4edda; color: #155724; }
     .IZIN_TIDAK_DIBERIKAN { background: #f8d7da; color: #721c24; }
+    
+    .kategori-tag { display: inline-block; background: #f1f2f6; color: #57606f; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; margin-top: 6px; }
   </style>
 </head>
 <body>
@@ -50,34 +52,46 @@
       <select id="sel_nama" required><option value="">Pilih Nama</option></select>
     </div>
 
+    <div class="form-group">
+      <label>Kategori Izin</label>
+      <select id="kategori" required>
+        <option value="">Pilih Kategori...</option>
+        <option value="Sakit">Sakit</option>
+        <option value="Cuti">Cuti</option>
+        <option value="Keperluan Keluarga">Keperluan Keluarga</option>
+        <option value="Lainnya">Lainnya</option>
+      </select>
+    </div>
+
     <div class="date-grid">
       <div class="form-group">
-        <label>Tanggal Mulai</label>
+        <label>Tgl Mulai</label>
         <input type="date" id="tgl_mulai" required>
       </div>
       <div class="form-group">
-        <label>Tanggal akhir</label>
+        <label>Tgl Akhir</label>
         <input type="date" id="tgl_akhir" required>
       </div>
     </div>
 
     <div class="form-group">
-      <label>Alasan Izin</label>
-      <textarea id="alasan" rows="3" placeholder="Kucing menikah, mantanku nikah, jadi ultraman..." required></textarea>
+      <label>Alasan Detail</label>
+      <textarea id="alasan" rows="3" placeholder="Tuliskan alasan detail perizinan..." required></textarea>
     </div>
 
     <button type="submit" id="btnSubmit">Kirim Pengajuan</button>
   </form>
 
   <div id="historyBox" style="margin-top:40px;">
-    <h3 style="font-size:16px; border-bottom: 2px solid #eee; padding-bottom: 10px;">Riwayat izine cah cah</h3>
-    <div id="listHistory" style="margin-top: 15px;">sabar bos sebentar...</div>
+    <h3 style="font-size:16px; border-bottom: 2px solid #eee; padding-bottom: 10px;">Semua Riwayat Izin</h3>
+    <div id="listHistory" style="margin-top: 15px;">Memuat data dari server...</div>
   </div>
 </div>
 
 <script>
-  // WAJIB GANTI URL INI DENGAN URL HASIL DEPLOYMENT BARU PADUKA
-  const API_URL = 'https://script.google.com/macros/s/AKfycbz0BupFs_75HESHJkKM4Uq_fYm9yTWUiWWpy6lIMQ79rodrZx6fGTQfGvM_kglZchaheQ/exec
+  // ⚠️ GANTI DENGAN URL HASIL DEPLOYMENT BARU DARI TAHAP 2
+  const API_URL = 'https://script.google.com/macros/s/AKfycbz0BupFs_75HESHJkKM4Uq_fYm9yTWUiWWpy6lIMQ79rodrZx6fGTQfGvM_kglZchaheQ/exec';
+  
   let master = [];
   let historyData = [];
 
@@ -91,7 +105,6 @@
       const selId = document.getElementById('sel_id');
       const selNama = document.getElementById('sel_nama');
 
-      // Mengambil data master (ID dan Nama)
       master.forEach(k => {
         if(k.id_karyawan && k.nama_karyawan) {
           selId.innerHTML += `<option value="${k.id_karyawan}">${k.id_karyawan}</option>`;
@@ -102,10 +115,87 @@
       renderHistory();
     } catch (error) {
       console.error(error);
-      document.getElementById('listHistory').innerHTML = '<p style="color:red; text-align:center;">Gagal mengambil data. Pastikan URL API sudah benar dan sudah di-Deploy ulang.</p>';
+      document.getElementById('listHistory').innerHTML = '<p style="color:red; text-align:center; font-size:13px;">Gagal terhubung ke Database. Pastikan URL Deployment baru sudah dimasukkan.</p>';
     }
   };
 
-  // Auto-fill ID & Nama
+  // Sinkronisasi ID dan Nama
   document.getElementById('sel_id').addEventListener('change', (e) => {
-    document.getElementById('sel_nama').value =
+    document.getElementById('sel_nama').value = e.target.value;
+  });
+
+  document.getElementById('sel_nama').addEventListener('change', (e) => {
+    document.getElementById('sel_id').value = e.target.value;
+  });
+
+  // Render History (Sekarang Menampilkan Kategori)
+  function renderHistory() {
+    const list = document.getElementById('listHistory');
+    list.innerHTML = '';
+
+    if (historyData.length === 0) {
+      list.innerHTML = '<div style="text-align:center; color:#999; font-size:13px;">Belum ada riwayat izin yang diajukan.</div>';
+      return;
+    }
+    
+    historyData.reverse().forEach(h => {
+      const statusValue = h.status ? h.status : 'PENDING';
+      const statusClass = statusValue.replace(/\s+/g, '_');
+      
+      // Jika kategori kosong di data lama, berikan teks "-"
+      const kategoriText = h.kategori ? h.kategori : '-';
+      
+      list.innerHTML += `
+        <div class="history-card">
+          <span class="status-badge ${statusClass}">${statusValue}</span>
+          <div style="font-weight:700; font-size:14px; margin-bottom: 5px; padding-right: 90px;">
+            ${h.nama || '-'} <span style="color:#a4b0be; font-size:12px;">(#${h.id_karyawan || '-'})</span>
+          </div>
+          <div style="font-size:12px; color:#636e72; font-weight: 500;">
+            📅 ${h.tanggal_izin_mulai || '-'} s/d ${h.tanggal_izin_akhir || '-'}
+          </div>
+          <div class="kategori-tag">${kategoriText}</div>
+        </div>
+      `;
+    });
+  }
+
+  // Mengirim Data
+  document.getElementById('izinForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('btnSubmit');
+    btn.disabled = true;
+    btn.innerText = 'Mengirim Data...';
+
+    const selNamaElement = document.getElementById('sel_nama');
+    const namaText = selNamaElement.options[selNamaElement.selectedIndex].text;
+
+    // Menambahkan Kategori ke dalam pengiriman (Payload)
+    const payload = {
+      id_karyawan: document.getElementById('sel_id').value,
+      nama: namaText,
+      tanggal_izin_mulai: document.getElementById('tgl_mulai').value,
+      tanggal_izin_akhir: document.getElementById('tgl_akhir').value,
+      kategori: document.getElementById('kategori').value, // Menarik nilai kategori
+      alasan: document.getElementById('alasan').value
+    };
+
+    try {
+      await fetch(API_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(payload)
+      });
+      alert('Pengajuan Izin Berhasil Dikirim!');
+      location.reload(); 
+    } catch (error) {
+      alert('Terjadi kesalahan saat mengirim data.');
+      btn.disabled = false;
+      btn.innerText = 'Kirim Pengajuan';
+    }
+  });
+</script>
+
+</body>
+</html>
