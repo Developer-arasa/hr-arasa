@@ -3,181 +3,162 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kupa - Form Izin</title>
+  <title>Arasa Store - Employee Portal</title>
   <style>
-    /* UI Kupa Style: Clean, Mobile First, Green Theme */
-    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f5f7; margin: 0; display: flex; justify-content: center; }
-    .app-container { background: #ffffff; width: 100%; max-width: 420px; min-height: 100vh; padding: 40px 24px; box-sizing: border-box; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+    /* CSS DETAIL: Mengacu pada visual Hijau Kupa */
+    :root { --primary: #317c56; --bg: #f8f9fa; --text: #2d3436; }
+    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; justify-content: center; }
+    .mobile-frame { background: white; width: 100%; max-width: 450px; min-height: 100vh; padding: 30px 20px; box-sizing: border-box; }
     
-    h2 { color: #1a1a1a; font-size: 24px; text-align: center; margin-bottom: 8px; }
-    p.subtitle { text-align: center; color: #888; font-size: 14px; margin-bottom: 30px; }
+    .brand-area { text-align: center; margin-bottom: 30px; }
+    .brand-logo { background: var(--primary); color: white; width: 60px; height: 60px; border-radius: 18px; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; font-weight: bold; font-size: 24px; }
     
-    label { display: block; font-size: 13px; color: #555; margin-bottom: 6px; font-weight: 600; }
-    input, textarea { width: 100%; padding: 15px; border: 1px solid #e0e0e0; border-radius: 10px; background: #fdfdfd; font-size: 14px; box-sizing: border-box; margin-bottom: 16px; outline: none; transition: 0.3s; }
-    input:focus, textarea:focus { border-color: #317c56; background: #fff; }
+    .form-group { margin-bottom: 20px; }
+    label { display: block; font-size: 12px; font-weight: 700; color: #636e72; text-transform: uppercase; margin-bottom: 8px; }
+    select, input, textarea { width: 100%; padding: 14px; border: 1.5px solid #eee; border-radius: 12px; font-size: 15px; box-sizing: border-box; outline: none; background: #fafafa; }
+    select:focus, input:focus { border-color: var(--primary); background: white; }
     
-    button { width: 100%; padding: 16px; background-color: #317c56; color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; transition: 0.3s; margin-top: 10px; }
-    button:disabled { background-color: #90bda3; cursor: not-allowed; }
+    .date-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
     
-    /* History Section */
-    .history-section { margin-top: 40px; }
-    .history-header { font-size: 16px; font-weight: bold; margin-bottom: 15px; color: #333; }
-    .history-card { border: 1px solid #eee; border-radius: 10px; padding: 15px; margin-bottom: 12px; background: #fafafa; }
-    .history-date { font-weight: 600; font-size: 14px; color: #222; }
-    .history-reason { font-size: 13px; color: #666; margin-top: 6px; }
-    
-    /* Badges */
-    .badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; float: right; }
-    .badge.pending { background: #fff3cd; color: #856404; }
-    .badge.diizinkan { background: #d4edda; color: #155724; }
-    .badge.ditolak { background: #f8d7da; color: #721c24; }
+    button { width: 100%; padding: 16px; background: var(--primary); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 10px; transition: 0.3s; }
+    button:active { transform: scale(0.98); }
+
+    /* History Style */
+    .history-card { padding: 15px; border-radius: 12px; border: 1px solid #eee; margin-bottom: 12px; position: relative; }
+    .status-badge { position: absolute; top: 15px; right: 15px; font-size: 10px; font-weight: 800; padding: 4px 8px; border-radius: 6px; }
+    .PENDING { background: #fff3cd; color: #856404; }
+    .IZIN_DIBERIKAN { background: #d4edda; color: #155724; }
+    .IZIN_TIDAK_DIBERIKAN { background: #f8d7da; color: #721c24; }
   </style>
 </head>
 <body>
 
-  <div class="app-container">
-    <h2>Form Izin</h2>
-    <p class="subtitle">Ajukan perizinan absensi Anda</p>
-
-    <form id="formIzin">
-      <label>ID Karyawan</label>
-      <input type="text" id="id_karyawan" placeholder="Contoh: KRY-001" required list="listId">
-      <datalist id="listId"></datalist>
-
-      <label>Nama Karyawan</label>
-      <input type="text" id="nama_karyawan" placeholder="Masukkan nama" required list="listNama">
-      <datalist id="listNama"></datalist>
-
-      <label>Tanggal Izin</label>
-      <input type="date" id="tanggal" required>
-
-      <label>Alasan</label>
-      <textarea id="alasan" placeholder="Sakit, Keperluan keluarga, dll." rows="3" required></textarea>
-      
-      <button type="submit" id="btnSubmit">Kirim Pengajuan</button>
-    </form>
-
-    <div class="history-section" id="historySection" style="display: none;">
-      <div class="history-header">Riwayat Izin Anda</div>
-      <div id="historyContainer"></div>
-    </div>
+<div class="mobile-frame">
+  <div class="brand-area">
+    <div class="brand-logo">A</div>
+    <h2 style="margin:0">HR Arasa Store</h2>
+    <p style="color:#636e72; font-size: 14px;">Form Perizinan Karyawan</p>
   </div>
 
-  <script>
-    // URL API Paduka
-    const GAS_URL = 'https://script.google.com/macros/s/AKfycbxNEo-G-tIgjE5AnZPTWMwBNc9MM98FQ4eLXVX5MMydDdFdv48hQUUQN-Y9JGQEe8ljOA/exec';
-    
-    let masterData = [];
-    let historyData = [];
+  <form id="izinForm">
+    <div class="form-group">
+      <label>ID Karyawan</label>
+      <select id="sel_id"><option value="">Pilih ID</option></select>
+    </div>
 
-    // 1. Fetch semua data saat web diload
-    window.onload = async () => {
-      try {
-        const response = await fetch(GAS_URL);
-        const data = await response.json();
-        
-        masterData = data.master || [];
-        historyData = data.history || [];
-        
-        const listId = document.getElementById('listId');
-        const listNama = document.getElementById('listNama');
-        
-        masterData.forEach(k => {
-          if(k.ID) listId.innerHTML += `<option value="${k.ID}">`;
-          if(k.Nama) listNama.innerHTML += `<option value="${k.Nama}">`;
-        });
-      } catch (err) {
-        console.error("Gagal memuat data API: ", err);
-      }
+    <div class="form-group">
+      <label>Nama Karyawan</label>
+      <select id="sel_nama"><option value="">Pilih Nama</option></select>
+    </div>
+
+    <div class="date-grid">
+      <div class="form-group">
+        <label>Mulai</label>
+        <input type="date" id="tgl_mulai" required>
+      </div>
+      <div class="form-group">
+        <label>Akhir</label>
+        <input type="date" id="tgl_akhir" required>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Alasan Izin</label>
+      <textarea id="alasan" rows="3" placeholder="Jelaskan alasan Paduka..." required></textarea>
+    </div>
+
+    <button type="submit" id="btnSubmit">Kirim Pengajuan</button>
+  </form>
+
+  <div id="historyBox" style="margin-top:40px; display:none;">
+    <h3 style="font-size:16px;">Riwayat Perizinan</h3>
+    <div id="listHistory"></div>
+  </div>
+</div>
+
+<script>
+  const API_URL = 'URL_GAS_PADUKA';
+  let master = [];
+  let history = [];
+
+  // 1. Inisialisasi Data
+  window.onload = async () => {
+    const res = await fetch(API_URL);
+    const data = await res.json();
+    master = data.master;
+    history = data.history;
+
+    const selId = document.getElementById('sel_id');
+    const selNama = document.getElementById('sel_nama');
+
+    master.forEach(k => {
+      selId.innerHTML += `<option value="${k.ID}">${k.ID}</option>`;
+      selNama.innerHTML += `<option value="${k.ID}">${k.NAMA}</option>`; // Value disamakan dengan ID untuk sync
+    });
+  };
+
+  // 2. Logika Sinkronisasi Dropdown
+  document.getElementById('sel_id').addEventListener('change', (e) => {
+    document.getElementById('sel_nama').value = e.target.value;
+    renderHistory(e.target.value);
+  });
+
+  document.getElementById('sel_nama').addEventListener('change', (e) => {
+    document.getElementById('sel_id').value = e.target.value;
+    renderHistory(e.target.value);
+  });
+
+  // 3. Render Riwayat Berdasarkan User Terpilih
+  function renderHistory(userId) {
+    const box = document.getElementById('historyBox');
+    const list = document.getElementById('listHistory');
+    list.innerHTML = '';
+
+    if (!userId) { box.style.display = 'none'; return; }
+    
+    // Filter history berdasarkan ID KARYAWAN (Key di JSON otomatis jadi ID_KARYAWAN)
+    const userHistory = history.filter(h => h.ID_KARYAWAN === userId);
+    box.style.display = 'block';
+
+    userHistory.reverse().forEach(h => {
+      // Normalisasi status untuk CSS class (Spasi jadi Underscore)
+      const statusClass = h.STATUS_IZIN.replace(/\s+/g, '_');
+      
+      list.innerHTML += `
+        <div class="history-card">
+          <span class="status-badge ${statusClass}">${h.STATUS_IZIN}</span>
+          <div style="font-weight:700; font-size:14px;">${h.TANGGAL_IZIN_MULAI} s/d ${h.TANGGAL_IZIN_AKHIR}</div>
+          <div style="font-size:12px; color:#636e72; margin-top:5px;">${h.ALASAN}</div>
+        </div>
+      `;
+    });
+  }
+
+  // 4. Submit Data
+  document.getElementById('izinForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('btnSubmit');
+    btn.disabled = true;
+    btn.innerText = 'Memproses...';
+
+    const payload = {
+      id: document.getElementById('sel_id').value,
+      nama: document.getElementById('sel_nama').options[document.getElementById('sel_nama').selectedIndex].text,
+      tgl_mulai: document.getElementById('tgl_mulai').value,
+      tgl_akhir: document.getElementById('tgl_akhir').value,
+      alasan: document.getElementById('alasan').value
     };
 
-    // 2. Fungsi Render Riwayat
-    function updateHistory(userId) {
-      const section = document.getElementById('historySection');
-      const container = document.getElementById('historyContainer');
-      container.innerHTML = '';
-      
-      if(!userId) {
-        section.style.display = 'none';
-        return;
-      }
-
-      const myHistory = historyData.filter(h => h.ID === userId);
-      section.style.display = 'block';
-
-      if(myHistory.length === 0) {
-        container.innerHTML = '<div style="text-align:center; color:#999; font-size:13px; margin-top:20px;">Belum ada riwayat izin.</div>';
-        return;
-      }
-
-      myHistory.reverse().forEach(h => {
-        let status = h.Status ? h.Status.toLowerCase() : 'pending';
-        let badgeClass = 'pending';
-        if (status.includes('izin') || status.includes('acc')) badgeClass = 'diizinkan';
-        if (status.includes('tolak')) badgeClass = 'ditolak';
-
-        container.innerHTML += `
-          <div class="history-card">
-            <span class="badge ${badgeClass}">${h.Status || 'Pending'}</span>
-            <div class="history-date">${h.Tanggal}</div>
-            <div class="history-reason">${h.Alasan}</div>
-          </div>
-        `;
-      });
-    }
-
-    // 3. Auto-fill 2 Arah & Trigger Riwayat
-    document.getElementById('id_karyawan').addEventListener('input', (e) => {
-      const match = masterData.find(k => k.ID == e.target.value);
-      if (match) {
-        document.getElementById('nama_karyawan').value = match.Nama;
-        updateHistory(match.ID);
-      } else {
-        updateHistory(null);
-      }
+    await fetch(API_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      body: JSON.stringify(payload)
     });
 
-    document.getElementById('nama_karyawan').addEventListener('input', (e) => {
-      const match = masterData.find(k => k.Nama.toLowerCase() == e.target.value.toLowerCase());
-      if (match) {
-        document.getElementById('id_karyawan').value = match.ID;
-        updateHistory(match.ID);
-      } else {
-        updateHistory(null);
-      }
-    });
+    alert('Pengajuan Berhasil Dikirim!');
+    location.reload();
+  });
+</script>
 
-    // 4. Submit Form
-    document.getElementById('formIzin').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const btn = document.getElementById('btnSubmit');
-      btn.innerText = 'Mengirim...';
-      btn.disabled = true;
-
-      const payload = {
-        id: document.getElementById('id_karyawan').value,
-        nama: document.getElementById('nama_karyawan').value,
-        tanggal: document.getElementById('tanggal').value,
-        alasan: document.getElementById('alasan').value
-      };
-
-      try {
-        await fetch(GAS_URL, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-        alert('Pengajuan berhasil! Status bisa dicek setelah direfresh.');
-        e.target.reset();
-        updateHistory(null); // Tutup riwayat setelah sukses submit
-      } catch (err) {
-        alert('Gagal mengirim data!');
-      } finally {
-        btn.innerText = 'Kirim Pengajuan';
-        btn.disabled = false;
-      }
-    });
-  </script>
 </body>
 </html>
