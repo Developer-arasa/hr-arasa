@@ -1,98 +1,26 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Arasa Store - Form Izin</title>
-  <style>
-    :root { --primary: #317c56; --bg: #f8f9fa; --text: #2d3436; }
-    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; justify-content: center; }
-    .mobile-frame { background: white; width: 100%; max-width: 450px; min-height: 100vh; padding: 30px 20px; box-sizing: border-box; }
-    
-    .brand-area { text-align: center; margin-bottom: 30px; }
-    .brand-logo { background: var(--primary); color: white; width: 60px; height: 60px; border-radius: 18px; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; font-weight: bold; font-size: 24px; }
-    
-    .form-group { margin-bottom: 20px; }
-    label { display: block; font-size: 12px; font-weight: 700; color: #636e72; text-transform: uppercase; margin-bottom: 8px; }
-    select, input, textarea { width: 100%; padding: 14px; border: 1.5px solid #eee; border-radius: 12px; font-size: 14px; box-sizing: border-box; outline: none; background: #fafafa; }
-    select:focus, input:focus { border-color: var(--primary); background: white; }
-    
-    .date-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-    
-    button { width: 100%; padding: 16px; background: var(--primary); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 10px; transition: 0.3s; }
-    button:disabled { background: #90bda3; cursor: not-allowed; }
-
-    .history-card { padding: 15px; border-radius: 12px; border: 1px solid #eee; margin-bottom: 12px; position: relative; background: #fff; }
-    .status-badge { position: absolute; top: 15px; right: 15px; font-size: 10px; font-weight: 800; padding: 4px 8px; border-radius: 6px; text-transform: uppercase; }
-    
-    .PENDING { background: #fff3cd; color: #856404; }
-    .IZIN_DIBERIKAN { background: #d4edda; color: #155724; }
-    .IZIN_TIDAK_DIBERIKAN { background: #f8d7da; color: #721c24; }
-  </style>
-</head>
-<body>
-
-<div class="mobile-frame">
-  <div class="brand-area">
-    <div class="brand-logo">A</div>
-    <h2 style="margin:0">HR Arasa Store</h2>
-    <p style="color:#636e72; font-size: 14px;">Portal Perizinan Karyawan</p>
-  </div>
-
-  <form id="izinForm">
-    <div class="form-group">
-      <label>ID Karyawan</label>
-      <select id="sel_id" required><option value="">Pilih ID</option></select>
-    </div>
-
-    <div class="form-group">
-      <label>Nama Karyawan</label>
-      <select id="sel_nama" required><option value="">Pilih Nama</option></select>
-    </div>
-
-    <div class="date-grid">
-      <div class="form-group">
-        <label>Tgl Mulai</label>
-        <input type="date" id="tgl_mulai" required>
-      </div>
-      <div class="form-group">
-        <label>Tgl Akhir</label>
-        <input type="date" id="tgl_akhir" required>
-      </div>
-    </div>
-
-    <div class="form-group">
-      <label>Alasan Izin</label>
-      <textarea id="alasan" rows="3" placeholder="Sakit, keperluan keluarga, dll." required></textarea>
-    </div>
-
-    <button type="submit" id="btnSubmit">Kirim Pengajuan</button>
-  </form>
-
-  <div id="historyBox" style="margin-top:40px;">
-    <h3 style="font-size:16px; border-bottom: 2px solid #eee; padding-bottom: 10px;">Semua Riwayat Izin</h3>
-    <div id="listHistory" style="margin-top: 15px;">Loading data...</div>
-  </div>
-</div>
-
-<script>
-  // MASUKKAN URL DEPLOYMENT GAS YANG BARU DI SINI
-  const API_URL = 'https://script.google.com/macros/s/AKfycby9QagasbWox5CmK5m4BYmcik9ajYX-4ZYCI6FocaY5AZ_rSp0QGyB_DPL7Xj2eU83Y0Q/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycby9QagasbWox5CmK5m4BYmcik9ajYX-4ZYCI6FocaY5AZ_rSp0QGyB_DPL7Xj2eU83Y0Q/exec';
   
   let master = [];
   let historyData = [];
 
   window.onload = async () => {
     try {
+      // Menyalakan Radar Deteksi (Tunggu Pop-Up)
+      alert("Sedang mencoba menghubungi Google Sheets...");
+
       const res = await fetch(API_URL);
       const data = await res.json();
+      
+      // Radar membaca isi data
+      alert("Koneksi Sukses! Jumlah Master Data: " + (data.master ? data.master.length : 0));
+      console.log("Isi Data Lengkap:", data);
+
       master = data.master || [];
       historyData = data.history || [];
 
       const selId = document.getElementById('sel_id');
       const selNama = document.getElementById('sel_nama');
 
-      // Menggunakan key huruf kecil persis sesuai header sheet Master_data
       master.forEach(k => {
         if(k.id_karyawan && k.nama_karyawan) {
           selId.innerHTML += `<option value="${k.id_karyawan}">${k.id_karyawan}</option>`;
@@ -102,6 +30,9 @@
 
       renderHistory();
     } catch (error) {
+      // Jika Gagal, ini yang muncul
+      alert("ERROR FATAL: Gagal mengambil data. Coba cek Console Inspector.");
+      console.error(error);
       document.getElementById('listHistory').innerHTML = '<p style="color:red;">Gagal mengambil data dari server.</p>';
     }
   };
@@ -126,7 +57,6 @@
     }
     
     historyData.reverse().forEach(h => {
-      // Menyesuaikan dengan header lowercase di sheet Data_izin
       const statusValue = h.status ? h.status : 'PENDING';
       const statusClass = statusValue.replace(/\s+/g, '_');
       
@@ -154,7 +84,6 @@
     const selNamaElement = document.getElementById('sel_nama');
     const namaText = selNamaElement.options[selNamaElement.selectedIndex].text;
 
-    // Payload disesuaikan dengan key baru
     const payload = {
       id_karyawan: document.getElementById('sel_id').value,
       nama: namaText,
@@ -177,7 +106,3 @@
       btn.innerText = 'Kirim Pengajuan';
     }
   });
-</script>
-
-</body>
-</html>
