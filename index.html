@@ -22,11 +22,9 @@
     button { width: 100%; padding: 16px; background: var(--primary); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 10px; transition: 0.3s; }
     button:disabled { background: #90bda3; cursor: not-allowed; }
 
-    /* CSS History Card */
     .history-card { padding: 15px; border-radius: 12px; border: 1px solid #eee; margin-bottom: 12px; position: relative; background: #fff; }
     .status-badge { position: absolute; top: 15px; right: 15px; font-size: 10px; font-weight: 800; padding: 4px 8px; border-radius: 6px; text-transform: uppercase; }
     
-    /* Warna Status Sesuai Spreadsheet */
     .PENDING { background: #fff3cd; color: #856404; }
     .IZIN_DIBERIKAN { background: #d4edda; color: #155724; }
     .IZIN_TIDAK_DIBERIKAN { background: #f8d7da; color: #721c24; }
@@ -78,110 +76,90 @@
 </div>
 
 <script>
-  // PASTIKAN URL INI MILIK GAS PADUKA YANG TERBARU
-  const API_URL = 'https://script.google.com/macros/s/AKfycbxNEo-G-tIgjE5AnZPTWMwBNc9MM98FQ4eLXVX5MMydDdFdv48hQUUQN-Y9JGQEe8ljOA/exec';
+  // MASUKKAN URL DEPLOYMENT GAS YANG BARU DI SINI
+  const API_URL = 'https://script.google.com/macros/s/AKfycby9QagasbWox5CmK5m4BYmcik9ajYX-4ZYCI6FocaY5AZ_rSp0QGyB_DPL7Xj2eU83Y0Q/exec';
   
   let master = [];
-  let history = [];
+  let historyData = [];
 
-  // ==========================================
-  // 1. PROSES LOAD AWAL (Deconstruct API)
-  // ==========================================
   window.onload = async () => {
     try {
       const res = await fetch(API_URL);
       const data = await res.json();
       master = data.master || [];
-      history = data.history || [];
+      historyData = data.history || [];
 
       const selId = document.getElementById('sel_id');
       const selNama = document.getElementById('sel_nama');
 
-      // LOOP MASTER DATA
-      // Bedah Detail: Sekarang kita panggil k.ID_KARYAWAN dan k.NAMA_KARYAWAN
-      // sesuai dengan header di Sheet "Master_data" Paduka
+      // Menggunakan key huruf kecil persis sesuai header sheet Master_data
       master.forEach(k => {
-        if(k.ID_KARYAWAN && k.NAMA_KARYAWAN) {
-          selId.innerHTML += `<option value="${k.ID_KARYAWAN}">${k.ID_KARYAWAN}</option>`;
-          selNama.innerHTML += `<option value="${k.ID_KARYAWAN}">${k.NAMA_KARYAWAN}</option>`;
+        if(k.id_karyawan && k.nama_karyawan) {
+          selId.innerHTML += `<option value="${k.id_karyawan}">${k.id_karyawan}</option>`;
+          selNama.innerHTML += `<option value="${k.id_karyawan}">${k.nama_karyawan}</option>`;
         }
       });
 
-      // Eksekusi fungsi render history saat web selesai diload
       renderHistory();
-
     } catch (error) {
       document.getElementById('listHistory').innerHTML = '<p style="color:red;">Gagal mengambil data dari server.</p>';
     }
   };
 
-  // ==========================================
-  // 2. LOGIKA SINKRONISASI DROPDOWN (Auto-Fill)
-  // ==========================================
-  // Jika ID dipilih, ubah value dari dropdown Nama agar sama dengan ID tersebut
+  // Sync Dropdown
   document.getElementById('sel_id').addEventListener('change', (e) => {
     document.getElementById('sel_nama').value = e.target.value;
   });
 
-  // Jika Nama dipilih, ubah value dari dropdown ID agar sama dengan Nama tersebut
   document.getElementById('sel_nama').addEventListener('change', (e) => {
     document.getElementById('sel_id').value = e.target.value;
   });
 
-  // ==========================================
-  // 3. FUNGSI RENDER HISTORY GLOBAL (Semua Karyawan)
-  // ==========================================
+  // Render History
   function renderHistory() {
     const list = document.getElementById('listHistory');
     list.innerHTML = '';
 
-    if (history.length === 0) {
+    if (historyData.length === 0) {
       list.innerHTML = '<div style="text-align:center; color:#999; font-size:13px;">Belum ada riwayat izin yang diajukan.</div>';
       return;
     }
     
-    // Bedah Detail: Tidak ada lagi fitur "filter()", 
-    // jadi semua data dari sheet "Data_izin" langsung ditampilkan dan di reverse (terbaru di atas)
-    history.reverse().forEach(h => {
-      
-      // Ambil status, hapus spasinya (PENDING, IZIN_DIBERIKAN, IZIN_TIDAK_DIBERIKAN) untuk CSS Class
-      const statusValue = h.STATUS_IZIN ? h.STATUS_IZIN : 'PENDING';
+    historyData.reverse().forEach(h => {
+      // Menyesuaikan dengan header lowercase di sheet Data_izin
+      const statusValue = h.status ? h.status : 'PENDING';
       const statusClass = statusValue.replace(/\s+/g, '_');
       
-      // Bedah Detail: Mengambil header NAMA, ID_KARYAWAN, TANGGAL_IZIN_MULAI dari sheet "Data_izin"
-      // Kolom Alasan sudah dihilangkan dari tampilan UI sesuai perintah.
       list.innerHTML += `
         <div class="history-card">
           <span class="status-badge ${statusClass}">${statusValue}</span>
           <div style="font-weight:700; font-size:14px; margin-bottom: 5px; padding-right: 90px;">
-            ${h.NAMA || '-'} <span style="color:#a4b0be; font-size:12px;">(#${h.ID_KARYAWAN || '-'})</span>
+            ${h.nama || '-'} <span style="color:#a4b0be; font-size:12px;">(#${h.id_karyawan || '-'})</span>
           </div>
           <div style="font-size:12px; color:#636e72; font-weight: 500;">
-            📅 ${h.TANGGAL_IZIN_MULAI || '-'} s/d ${h.TANGGAL_IZIN_AKHIR || '-'}
+            📅 ${h.tanggal_izin_mulai || '-'} s/d ${h.tanggal_izin_akhir || '-'}
           </div>
         </div>
       `;
     });
   }
 
-  // ==========================================
-  // 4. SUBMIT FORM KE SPREADSHEET
-  // ==========================================
+  // Submit Data
   document.getElementById('izinForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const btn = document.getElementById('btnSubmit');
     btn.disabled = true;
     btn.innerText = 'Mengirim Data...';
 
-    // Ambil text dari dropdown nama yang terpilih (bukan valuenya)
     const selNamaElement = document.getElementById('sel_nama');
     const namaText = selNamaElement.options[selNamaElement.selectedIndex].text;
 
+    // Payload disesuaikan dengan key baru
     const payload = {
-      id: document.getElementById('sel_id').value,
+      id_karyawan: document.getElementById('sel_id').value,
       nama: namaText,
-      tgl_mulai: document.getElementById('tgl_mulai').value,
-      tgl_akhir: document.getElementById('tgl_akhir').value,
+      tanggal_izin_mulai: document.getElementById('tgl_mulai').value,
+      tanggal_izin_akhir: document.getElementById('tgl_akhir').value,
       alasan: document.getElementById('alasan').value
     };
 
@@ -192,7 +170,7 @@
         body: JSON.stringify(payload)
       });
       alert('Pengajuan Izin Berhasil Dikirim!');
-      location.reload(); // Refresh halaman agar history langsung terupdate
+      location.reload(); 
     } catch (error) {
       alert('Terjadi kesalahan saat mengirim data.');
       btn.disabled = false;
