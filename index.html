@@ -147,17 +147,17 @@
   <!-- HEADER -->
   <div class="brand-area">
     <h1>HR ARASA</h1>
-    <p>Pusat Informasi Karyawan</p>
+    <p>Sistem Informasi Pegawai</p>
   </div>
 
   <!-- VIEW 1: LANDING PAGE -->
   <div id="viewLanding" style="display: none;">
     <div class="soft-card" style="text-align: center; margin-bottom: 25px;">
-      <h2 style="margin-bottom: 5px; font-size: 20px;">Hello, Arasa Team</h2>
-      <p style="font-size: 13px; font-weight: 400; color: var(--text-muted); margin-top: 0;">Semangat Ya Kerjanya... katanya mau nikah tahun ini !!</p>
+      <h2 style="margin-bottom: 5px; font-size: 20px;">Hello Arasa Team</h2>
+      <p style="font-size: 13px; font-weight: 400; color: var(--text-muted); margin-top: 0;">Good day to work, pilih menu di bawah</p>
     </div>
-    <button class="btn-menu" onclick="switchView('viewIzin')">PENGAJUAN  IZIN</button>
-    <button class="btn-menu" onclick="switchView('viewLembur')">PENGAJUAN LEMBUR</button>
+    <button class="btn-menu" onclick="switchView('viewIzin')">📄 Portal Izin</button>
+    <button class="btn-menu" onclick="switchView('viewLembur')">⏱️ Portal Lembur</button>
   </div>
 
   <!-- VIEW 2: FORM IZIN -->
@@ -280,10 +280,8 @@
       master = data.master || []; historyData = data.history || []; historyLemburData = data.historyLembur || [];
 
       // INISIALISASI AUTOCOMPLETE DENGAN STRICT MODE
-      // Mode ID
       setupStrictAutocomplete('izin_id', 'izin_nama', 'drop_izin_id', 'ID');
       setupStrictAutocomplete('lembur_id', 'lembur_nama', 'drop_lembur_id', 'ID');
-      // Mode Nama
       setupStrictAutocomplete('izin_nama', 'izin_id', 'drop_izin_nama', 'NAMA');
       setupStrictAutocomplete('lembur_nama', 'lembur_id', 'drop_lembur_nama', 'NAMA');
 
@@ -293,7 +291,6 @@
     }
   };
 
-  // LOGIKA AUTOCOMPLETE STRICT (TERPISAH ID / NAMA)
   function setupStrictAutocomplete(inputId, targetId, listId, mode) {
     const input = document.getElementById(inputId);
     const target = document.getElementById(targetId);
@@ -308,21 +305,16 @@
           const div = document.createElement('div');
           div.className = 'autocomplete-item';
           
-          // Tampilan List Khusus (Hanya ID atau Hanya Nama)
           if (mode === 'ID') div.innerHTML = `<strong>${k.id_karyawan}</strong>`;
           else div.innerHTML = `<strong>${k.nama_karyawan}</strong>`;
           
           div.onclick = () => {
-            // Sinkronisasi Data Khusus Mode
             if (mode === 'ID') {
-              input.value = k.id_karyawan;
-              target.value = k.nama_karyawan;
+              input.value = k.id_karyawan; target.value = k.nama_karyawan;
             } else {
-              input.value = k.nama_karyawan;
-              target.value = k.id_karyawan;
+              input.value = k.nama_karyawan; target.value = k.id_karyawan;
             }
-            input.classList.remove('input-error');
-            target.classList.remove('input-error');
+            input.classList.remove('input-error'); target.classList.remove('input-error');
             list.style.display = 'none';
           };
           list.appendChild(div);
@@ -334,23 +326,15 @@
     function doSearch() {
       const val = input.value.toLowerCase();
       let filtered = [];
-      
-      // Filter Khusus Mode
       if (mode === 'ID') filtered = master.filter(k => String(k.id_karyawan).toLowerCase().includes(val));
       else filtered = master.filter(k => k.nama_karyawan.toLowerCase().includes(val));
-      
       renderList(filtered);
-      
-      // Keamanan Real-Time: Kalo dia mulai ngetik, kolom pasangan di clear biar gak error asinkron
       target.value = "";
     }
 
     function validateExactMatch() {
-      // Tunggu sebentar biar event onclick list item tereksekusi duluan
       setTimeout(() => {
-        const val = input.value.toLowerCase();
-        let exactMatch = null;
-        
+        const val = input.value.toLowerCase(); let exactMatch = null;
         if (mode === 'ID') exactMatch = master.find(k => String(k.id_karyawan).toLowerCase() === val);
         else exactMatch = master.find(k => k.nama_karyawan.toLowerCase() === val);
 
@@ -359,25 +343,16 @@
           else target.value = exactMatch.id_karyawan;
           input.classList.remove('input-error'); target.classList.remove('input-error');
         } else {
-          // Kalo asal ngetik & gak sesuai database, kosongin targetnya + kasih border merah
-          target.value = ""; 
-          if(input.value !== "") input.classList.add('input-error');
+          target.value = ""; if(input.value !== "") input.classList.add('input-error');
         }
       }, 150);
     }
-
-    input.addEventListener('focus', doSearch);
-    input.addEventListener('input', doSearch);
-    input.addEventListener('blur', validateExactMatch); // Validasi saat kursor pindah
+    input.addEventListener('focus', doSearch); input.addEventListener('input', doSearch); input.addEventListener('blur', validateExactMatch); 
   }
 
-  // Klik di luar daftar menutup pop-up list
   document.addEventListener('click', function(e) {
-    if (!e.target.closest('.select-wrapper')) {
-      document.querySelectorAll('.autocomplete-list').forEach(el => el.style.display = 'none');
-    }
+    if (!e.target.closest('.select-wrapper')) document.querySelectorAll('.autocomplete-list').forEach(el => el.style.display = 'none');
   });
-
 
   function renderHistory() {
     const list = document.getElementById('listHistory'); list.innerHTML = '';
@@ -410,13 +385,13 @@
     const input = document.getElementById('searchInputKaryawan').value.toLowerCase();
     const items = document.querySelectorAll('#tabKaryawan .search-item');
     items.forEach(item => {
-      const nama = item.getAttribute('data-nama');
-      const id = item.getAttribute('data-id');
+      const nama = item.getAttribute('data-nama'); const id = item.getAttribute('data-id');
       if (nama.includes(input) || id.includes(input)) item.style.display = '';
       else item.style.display = 'none';
     });
   }
 
+  // --- PARSER ULTIMATE (ANTI BUG SPASI & KOMA) ---
   function parseDurasiToMins(val) {
     if(!val) return 0;
     let str = String(val).trim();
@@ -426,8 +401,12 @@
       if(matchJam) h = parseInt(matchJam[1]); if(matchMenit) m = parseInt(matchMenit[1]);
       return (h * 60) + m;
     } else {
-      let decimalHrs = parseFloat(str);
-      if (!isNaN(decimalHrs)) return Math.round(decimalHrs * 60);
+      // Hapus semua spasi tak kasat mata & paksa koma jadi titik
+      let cleanStr = str.replace(/\s/g, '').replace(/,/g, '.');
+      let decimalHrs = parseFloat(cleanStr);
+      if (!isNaN(decimalHrs)) {
+        return Math.round(decimalHrs * 60);
+      }
     }
     return 0;
   }
@@ -535,59 +514,31 @@
     }
   }
 
-  // --- VALIDASI GLOBAL SEBELUM SUBMIT ---
-  function validateKaryawanMaster(idVal, namaVal) {
-    return master.find(k => k.id_karyawan == idVal && k.nama_karyawan == namaVal);
-  }
+  function validateKaryawanMaster(idVal, namaVal) { return master.find(k => k.id_karyawan == idVal && k.nama_karyawan == namaVal); }
 
-  // SUBMIT FORM IZIN
   document.getElementById('izinForm').addEventListener('submit', async (e) => {
     e.preventDefault();
-    const id_izin = document.getElementById('izin_id').value;
-    const nama_izin = document.getElementById('izin_nama').value;
-
-    // Pengecekan Akhir (SATPAM FORM)
-    if(!validateKaryawanMaster(id_izin, nama_izin)) {
-      alert("❌ Gagal: Pastikan ID dan Nama Karyawan dipilih dengan benar dari daftar yang tersedia!"); return;
-    }
-
+    const id_izin = document.getElementById('izin_id').value; const nama_izin = document.getElementById('izin_nama').value;
+    if(!validateKaryawanMaster(id_izin, nama_izin)) { alert("❌ Gagal: Pastikan ID dan Nama Karyawan dipilih dengan benar dari daftar yang tersedia!"); return; }
     const btn = document.getElementById('btnSubmit'); btn.disabled = true; btn.innerText = 'Mengirim Data...';
-    const kategori = document.getElementById('kategori').value;
-    const tglMulai = document.getElementById('tgl_mulai').value; const tglAkhir = document.getElementById('tgl_akhir').value;
-    const alasan = document.getElementById('alasan').value;
-
+    const kategori = document.getElementById('kategori').value; const tglMulai = document.getElementById('tgl_mulai').value; const tglAkhir = document.getElementById('tgl_akhir').value; const alasan = document.getElementById('alasan').value;
     const payload = { tipe_form: "izin", id_karyawan: id_izin, nama: nama_izin, tanggal_izin_mulai: tglMulai, tanggal_izin_akhir: tglAkhir, kategori: kategori, alasan: alasan };
     try {
       await fetch(API_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) });
       const waTanggal = (tglMulai === tglAkhir) ? tglMulai : `${tglMulai} s/d ${tglAkhir}`;
       const waText = `Halo kak elok, aku mohon ${kategori} di ${waTanggal} karena ${alasan}, mohon untuk segera memberikan keputusan, terima kasih!`;
-      alert('Pengajuan Izin Berhasil Disimpan! Dialihkan ke WhatsApp...');
-      window.location.href = `https://wa.me/628155138385?text=${encodeURIComponent(waText)}`;
+      alert('Pengajuan Izin Berhasil Disimpan! Dialihkan ke WhatsApp...'); window.location.href = `https://wa.me/628155138385?text=${encodeURIComponent(waText)}`;
     } catch (error) { alert('Terjadi kesalahan.'); btn.disabled = false; btn.innerText = 'Kirim Pengajuan'; }
   });
 
-  // SUBMIT FORM LEMBUR
   document.getElementById('lemburForm').addEventListener('submit', async (e) => {
     e.preventDefault();
-    const idInput = document.getElementById('lembur_id').value; 
-    const namaInput = document.getElementById('lembur_nama').value;
-    const tglInput = document.getElementById('tgl_lembur').value;
-
-    // Pengecekan Akhir (SATPAM FORM)
-    if(!validateKaryawanMaster(idInput, namaInput)) {
-      alert("❌ Gagal: Pastikan ID dan Nama Karyawan dipilih dengan benar dari daftar yang tersedia!"); return;
-    }
-
+    const idInput = document.getElementById('lembur_id').value; const namaInput = document.getElementById('lembur_nama').value; const tglInput = document.getElementById('tgl_lembur').value;
+    if(!validateKaryawanMaster(idInput, namaInput)) { alert("❌ Gagal: Pastikan ID dan Nama Karyawan dipilih dengan benar dari daftar yang tersedia!"); return; }
     const cekDuplikat = historyLemburData.find(h => h.id_karyawan == idInput && h.tanggal_lembur == tglInput);
     if (cekDuplikat) return alert(`Gagal: Karyawan ini sudah input lembur pada tanggal ${tglInput}!`);
-
     const btn = document.getElementById('btnSubmitLembur'); btn.disabled = true; btn.innerText = 'Menyimpan Data...';
-    const payload = {
-      tipe_form: "lembur", id_karyawan: idInput, nama: namaInput,
-      tanggal_lembur: tglInput, jam_awal: document.getElementById('waktu_mulai').value,
-      jam_selesai: document.getElementById('waktu_selesai').value, alasan: document.getElementById('alasan_lembur').value
-    };
-
+    const payload = { tipe_form: "lembur", id_karyawan: idInput, nama: namaInput, tanggal_lembur: tglInput, jam_awal: document.getElementById('waktu_mulai').value, jam_selesai: document.getElementById('waktu_selesai').value, alasan: document.getElementById('alasan_lembur').value };
     try {
       await fetch(API_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) });
       alert('Data Lembur Berhasil Disimpan!'); location.reload(); 
