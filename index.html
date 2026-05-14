@@ -3,547 +3,219 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HR Arasa - Portal Karyawan</title>
+  <title>Migrasi Sistem - HR Arasa</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;800&display=swap');
 
-    :root { 
-      --bg-gradient: linear-gradient(135deg, #a8cbf3 0%, #f6b8d2 100%);
-      --glass-bg: rgba(255, 255, 255, 0.45);
-      --glass-border: rgba(255, 255, 255, 0.6);
-      --shadow-glass: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
-      --text-dark: #2d3436;
-      --text-muted: #636e72;
-      --btn-gradient: linear-gradient(135deg, #8a2387, #e94057, #f27121); 
-      --input-bg: rgba(255, 255, 255, 0.65);
-      --input-border: rgba(255, 255, 255, 0.8);
-      --card-bg: #ffffff;
-    }
-    
-    body { 
-      font-family: 'Poppins', sans-serif; 
-      background: var(--bg-gradient);
-      color: var(--text-dark); margin: 0; display: flex; justify-content: center;
-      min-height: 100vh; background-attachment: fixed;
-    }
-    
-    .mobile-frame { width: 100%; max-width: 450px; padding: 20px; box-sizing: border-box; position: relative; }
-    
-    .soft-card {
-      background: var(--glass-bg); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-      border: 1px solid var(--glass-border); border-radius: 24px; padding: 25px;
-      box-shadow: var(--shadow-glass); margin-bottom: 20px;
+    body {
+      margin: 0; padding: 0; background: #0f172a; color: white;
+      font-family: 'Poppins', sans-serif; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; min-height: 100vh;
+      overflow: hidden; user-select: none; /* Biar teks gak ke-block pas nahan klik */
     }
 
-    .brand-area { text-align: center; margin-bottom: 30px; margin-top: 20px; }
-    .brand-area h1 { margin: 0; font-size: 28px; font-weight: 800; color: #2d3436; letter-spacing: -1px; }
-    .brand-area p { color: #636e72; font-size: 14px; font-weight: 400; margin-top: 5px; }
-    h2, h3 { font-weight: 800; margin-top: 0; color: #2d3436; letter-spacing: -0.5px; }
-    
-    .form-group { margin-bottom: 18px; }
-    label { display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; margin-bottom: 8px; color: var(--text-muted); }
-    select, input, textarea { 
-      width: 100%; padding: 14px 16px; border: 2px solid var(--input-border); 
-      border-radius: 14px; font-size: 13px; box-sizing: border-box; 
-      background: var(--input-bg); color: var(--text-dark); font-weight: 600; outline: none; transition: 0.3s;
-      font-family: 'Poppins', sans-serif;
-    }
-    select:focus, input:focus, textarea:focus { border-color: #f27121; background: rgba(255, 255, 255, 0.9); box-shadow: 0 0 0 4px rgba(242, 113, 33, 0.1); }
-    .date-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-    
-    button { 
-      width: 100%; padding: 16px; background: var(--btn-gradient); color: white; border: none; 
-      border-radius: 16px; font-size: 15px; font-weight: 700; cursor: pointer; transition: 0.3s; 
-      box-shadow: 0 8px 20px rgba(233, 64, 87, 0.3); font-family: 'Poppins', sans-serif;
-    }
-    button:hover { transform: translateY(-2px); box-shadow: 0 12px 25px rgba(233, 64, 87, 0.4); }
-    button:disabled { background: rgba(255,255,255,0.5); cursor: not-allowed; box-shadow: none; transform: none; color: #718096; }
-    
-    .btn-menu {
-      display: flex; align-items: center; justify-content: center; width: 100%; font-size: 16px; font-weight: 700;
-      padding: 22px; margin-bottom: 15px; background: var(--glass-bg); backdrop-filter: blur(16px);
-      color: var(--text-dark); border-radius: 20px; border: 1px solid var(--glass-border); box-shadow: var(--shadow-glass); 
-    }
-    .btn-menu:hover { background: rgba(255,255,255,0.6); color: #e94057; }
-    
-    .btn-back { 
-      background: var(--glass-bg); color: var(--text-dark); box-shadow: none; margin-bottom: 20px; 
-      padding: 10px 18px; width: auto; font-size: 13px; border-radius: 12px; font-weight: 600; 
-      backdrop-filter: blur(10px); border: 1px solid var(--glass-border);
-    }
-    
-    .history-card { padding: 16px; border-radius: 16px; border: 1px solid var(--input-border); margin-bottom: 12px; position: relative; background: var(--input-bg); transition: 0.3s; }
-    .status-badge { position: absolute; top: 16px; right: 16px; font-size: 10px; font-weight: 800; padding: 5px 10px; border-radius: 8px; text-transform: uppercase; }
-    .PENDING { background: #feebc8; color: #c05621; }
-    .IZIN_DIBERIKAN { background: #c6f6d5; color: #276749; }
-    .IZIN_TIDAK_DIBERIKAN { background: #fed7d7; color: #c53030; }
-    .kategori-tag { display: inline-block; background: rgba(255,255,255,0.8); color: #4a5568; padding: 4px 10px; border-radius: 6px; font-size: 10px; font-weight: 700; margin-top: 8px; border: 1px solid var(--glass-border);}
-    .history-header { font-size: 15px; border-bottom: 2px solid var(--glass-border); padding-bottom: 12px; color: var(--text-dark); margin-bottom: 15px;}
-    
-    /* CSS Tabs Lembur */
-    .tab-nav { display: flex; gap: 10px; margin-bottom: 15px; }
-    .tab-btn { 
-      flex: 1; padding: 12px 10px; border-radius: 12px; font-size: 12px; font-weight: 700; cursor: pointer;
-      background: rgba(255,255,255,0.4); border: 1px solid var(--glass-border); color: var(--text-muted); box-shadow: none;
-    }
-    .tab-btn.active { background: var(--btn-gradient); color: white; border: none; box-shadow: 0 4px 10px rgba(233, 64, 87, 0.2); }
-    .tab-content { display: none; }
-    .tab-content.active { display: block; }
+    /* EFEK GETAR PAS KUCING NGAMUK */
+    body.shake { animation: screenShake 0.1s infinite; background: #1e1b4b; }
 
-    /* CSS Kalender Grid */
-    .calendar-header { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; font-weight: 800; text-align: center; margin-bottom: 8px; font-size: 11px; color: var(--text-muted); }
-    .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
-    .cal-day { 
-      background: rgba(255,255,255,0.6); border: 1px solid var(--glass-border); border-radius: 10px; 
-      padding: 8px 4px; text-align: center; min-height: 55px; display:flex; flex-direction:column; 
-      align-items:center; justify-content:center; transition: 0.2s;
-    }
-    .cal-day.empty { background: transparent; border: none; }
-    .cal-badge { font-size: 10px; font-weight: 800; padding: 3px 6px; border-radius: 6px; margin-top: 4px; }
-    .cal-badge.zero { background: rgba(0,0,0,0.05); color: #a0aec0; }
-    .cal-badge.red { background: #e94057; color: white; cursor: pointer; box-shadow: 0 2px 8px rgba(233, 64, 87, 0.4); }
-    .cal-day.has-data:hover { border-color: #e94057; transform: scale(1.05); }
-
-    /* CSS Accordion (Karyawan) */
-    .acc-item { background: rgba(255,255,255,0.55); border-radius: 14px; margin-bottom: 10px; border: 1px solid var(--glass-border); overflow: hidden; transition: 0.3s;}
-    .acc-item:hover { background: rgba(255,255,255,0.8); }
-    .acc-header { padding: 15px; font-weight: 700; color: var(--text-dark); cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 13px;}
-    .acc-badge { font-size:11px; background: rgba(0,0,0,0.06); padding: 5px 10px; border-radius: 8px; border: 1px solid rgba(0,0,0,0.1); color: var(--text-dark); font-weight: 800;}
-    .acc-body { display: none; padding: 0 15px 15px 15px; }
-    .acc-row { border-top: 1px dashed rgba(0,0,0,0.15); padding: 12px 0; font-size: 12px; color: #4a5568; display: flex; justify-content: space-between; align-items: center;}
-
-    /* CSS Popup Modal */
-    .modal-overlay { 
-      position: fixed; top:0; left:0; right:0; bottom:0; background: rgba(0,0,0,0.6); 
-      backdrop-filter: blur(5px); z-index: 999; display: none; align-items: center; justify-content: center; 
-      opacity: 0; transition: opacity 0.3s ease;
-    }
-    .modal-box { 
-      background: var(--card-bg); width: 90%; max-width: 350px; border-radius: 20px; padding: 20px; 
-      box-shadow: 0 15px 30px rgba(0,0,0,0.2); transform: translateY(20px); transition: transform 0.3s ease; 
-      max-height: 80vh; overflow-y: auto;
+    @keyframes screenShake {
+      0% { transform: translate(2px, 1px) rotate(0deg); }
+      10% { transform: translate(-1px, -2px) rotate(-1deg); }
+      20% { transform: translate(-3px, 0px) rotate(1deg); }
+      30% { transform: translate(0px, 2px) rotate(0deg); }
+      40% { transform: translate(1px, -1px) rotate(1deg); }
+      50% { transform: translate(-1px, 2px) rotate(-1deg); }
+      60% { transform: translate(-3px, 1px) rotate(0deg); }
+      70% { transform: translate(2px, 1px) rotate(-1deg); }
+      80% { transform: translate(-1px, -1px) rotate(1deg); }
+      90% { transform: translate(2px, 2px) rotate(0deg); }
+      100% { transform: translate(1px, -2px) rotate(-1deg); }
     }
 
-    /* CSS Autocomplete Dropdown Custom */
-    .select-wrapper { position: relative; }
-    .autocomplete-list {
-      position: absolute; top: 100%; left: 0; right: 0; background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(10px); border: 1px solid var(--glass-border); border-radius: 14px;
-      max-height: 200px; overflow-y: auto; z-index: 1000; display: none; box-shadow: var(--shadow-glass);
-      margin-top: 5px; padding: 5px 0;
+    .text-container { text-align: center; z-index: 10; margin-bottom: 50px; pointer-events: none; }
+    .text-container h1 { font-size: 32px; font-weight: 800; margin: 0 0 10px 0; color: #f8fafc; letter-spacing: -1px; }
+    .text-container p { font-size: 14px; color: #94a3b8; margin: 0; max-width: 400px; line-height: 1.6; }
+
+    /* WADAH KUCING */
+    .cat-wrapper {
+      position: relative; width: 200px; height: 180px; z-index: 5;
     }
-    .autocomplete-item {
-      padding: 10px 15px; font-size: 13px; font-weight: 600; color: var(--text-dark);
-      cursor: pointer; border-bottom: 1px solid rgba(0,0,0,0.05); display: flex; flex-direction: column;
+
+    /* TANGAN MUKUL (Disembunyikan awalnya) */
+    .paw-arm {
+      position: absolute; top: 120px; left: 100px; width: 0px; height: 16px;
+      background: #fb923c; transform-origin: left center; z-index: 20;
+      border-radius: 8px; opacity: 0; transition: width 0.1s ease-out, opacity 0.1s;
+      pointer-events: none;
     }
-    .autocomplete-item:last-child { border-bottom: none; }
-    .autocomplete-item:hover { background: #fff0f2; color: #e94057; }
-    .input-error { border-color: #e53e3e !important; background: #fff5f5 !important; }
+    .paw-arm::after {
+      content: ''; position: absolute; right: -15px; top: -10px; width: 35px; height: 35px;
+      background: #f97316; border-radius: 50%; box-shadow: -2px 2px 10px rgba(0,0,0,0.5);
+    }
+    /* Mode Mukul */
+    .cat-wrapper.angry .paw-arm { opacity: 1; }
+
+    /* KEPALA KUCING OYEN */
+    .head {
+      width: 160px; height: 140px; background: #fb923c;
+      border-radius: 45% 45% 45% 45%; position: absolute;
+      bottom: 0; left: 20px; z-index: 10;
+      box-shadow: inset -10px -15px 20px rgba(0,0,0,0.2);
+      transition: 0.2s;
+    }
+
+    /* TELINGA */
+    .ear {
+      width: 0; height: 0; border-left: 30px solid transparent; border-right: 30px solid transparent;
+      border-bottom: 50px solid #fb923c; position: absolute; top: -15px; transition: 0.2s;
+    }
+    .ear.left { left: -5px; transform: rotate(-25deg); }
+    .ear.right { right: -5px; transform: rotate(25deg); }
+    
+    .ear-inner {
+      width: 0; height: 0; border-left: 15px solid transparent; border-right: 15px solid transparent;
+      border-bottom: 35px solid #fecaca; position: absolute; top: 10px; left: -15px;
+    }
+
+    /* MATA & LIRIKAN PUPIL */
+    .eye {
+      width: 40px; height: 40px; background: white; border-radius: 50%;
+      position: absolute; top: 50px; display: flex; align-items: center; justify-content: center;
+      overflow: hidden; transition: 0.2s;
+    }
+    .eye.left { left: 30px; }
+    .eye.right { right: 30px; }
+    
+    .pupil {
+      width: 22px; height: 22px; background: #0f172a; border-radius: 50%;
+      transition: transform 0.05s linear; /* Biar ngikutin kursor gak delay */
+    }
+
+    /* HIDUNG & MULUT */
+    .nose {
+      width: 14px; height: 10px; background: #fca5a5; border-radius: 50% 50% 50% 50% / 30% 30% 70% 70%;
+      position: absolute; top: 85px; left: 73px;
+    }
+    .mouth {
+      width: 20px; height: 10px; border-bottom: 3px solid #0f172a; border-radius: 50%;
+      position: absolute; top: 95px; left: 70px; transition: 0.2s;
+    }
+
+    /* =========== MODE NGAMUK (ANGRY) =========== */
+    .cat-wrapper.angry .head { background: #ea580c; box-shadow: inset -10px -15px 20px rgba(0,0,0,0.4); }
+    .cat-wrapper.angry .ear.left { transform: rotate(-50deg) translateY(15px); border-bottom-color: #ea580c;}
+    .cat-wrapper.angry .ear.right { transform: rotate(50deg) translateY(15px); border-bottom-color: #ea580c;}
+    .cat-wrapper.angry .eye { 
+      height: 15px; top: 62px; background: #fef08a; /* Mata nyipit kuning marah */
+      border-radius: 5px; transform: rotate(10deg);
+    }
+    .cat-wrapper.angry .eye.left { transform: rotate(15deg); }
+    .cat-wrapper.angry .eye.right { transform: rotate(-15deg); }
+    .cat-wrapper.angry .pupil { width: 10px; height: 10px; background: #b91c1c; }
+    .cat-wrapper.angry .mouth { width: 30px; height: 20px; background: #450a0a; border-radius: 50%; top: 100px; left: 65px; border: none;}
   </style>
 </head>
 <body>
 
-<div class="mobile-frame">
-  <!-- HEADER -->
-  <div class="brand-area">
-    <h1>HR ARASA</h1>
-    <p>Sistem Informasi Pegawai</p>
+  <div class="text-container">
+    <h1>Nyuwun Pangapunten</h1>
+    <p>Situs web iki lagi direnovasi. Nyuwun pangapunten amarga ana gangguan. Situs web iki bakal bisa diakses maneh tanggal 14 Mei 2026, jam 13.00.</p>
   </div>
 
-  <!-- VIEW 1: LANDING PAGE -->
-  <div id="viewLanding" style="display: none;">
-    <div class="soft-card" style="text-align: center; margin-bottom: 25px;">
-      <h2 style="margin-bottom: 5px; font-size: 20px;">Hello Arasa Team</h2>
-      <p style="font-size: 13px; font-weight: 400; color: var(--text-muted); margin-top: 0;">Good day to work, pilih menu di bawah</p>
-    </div>
-    <button class="btn-menu" onclick="switchView('viewIzin')">📄 Portal Izin</button>
-    <button class="btn-menu" onclick="switchView('viewLembur')">⏱️ Portal Lembur</button>
-  </div>
+  <div class="cat-wrapper" id="cat">
+    <div class="paw-arm" id="paw"></div>
 
-  <!-- VIEW 2: FORM IZIN -->
-  <div id="viewIzin" style="display: none;">
-    <button class="btn-back" onclick="switchView('viewLanding')">← Kembali</button>
-    <div class="soft-card">
-      <h2>Pengajuan Izin</h2>
-      <form id="izinForm">
-        
-        <!-- AUTOCOMPLETE DROPDOWN IZIN -->
-        <div class="form-group select-wrapper">
-          <label>ID Karyawan</label>
-          <input type="text" id="izin_id" placeholder="Ketik ID Karyawan..." autocomplete="off" required>
-          <div id="drop_izin_id" class="autocomplete-list"></div>
-        </div>
-        <div class="form-group select-wrapper">
-          <label>Nama Karyawan</label>
-          <input type="text" id="izin_nama" placeholder="Ketik Nama Karyawan..." autocomplete="off" required>
-          <div id="drop_izin_nama" class="autocomplete-list"></div>
-        </div>
-
-        <div class="form-group">
-          <label>Kategori Izin</label>
-          <select id="kategori" required>
-            <option value="">Pilih Kategori...</option>
-            <option value="Sakit">Sakit</option>
-            <option value="Izin">Izin</option>
-            <option value="Abnormal case">Abnormal case</option>
-          </select>
-        </div>
-        <div class="date-grid">
-          <div class="form-group"><label>Tanggal Mulai</label><input type="date" id="tgl_mulai" required></div>
-          <div class="form-group"><label>Tanggal Akhir</label><input type="date" id="tgl_akhir" required></div>
-        </div>
-        <div class="form-group"><label>Alasan Detail</label><textarea id="alasan" rows="3" placeholder="Alasan..." required></textarea></div>
-        <button type="submit" id="btnSubmit">Kirim Pengajuan</button>
-      </form>
-    </div>
-    <div class="soft-card">
-      <h3 class="history-header">Riwayat Izin</h3>
-      <div id="listHistory"><div style="text-align:center; font-size:13px;">Sedang dimuat...</div></div>
+    <div class="head">
+      <div class="ear left"><div class="ear-inner"></div></div>
+      <div class="ear right"><div class="ear-inner"></div></div>
+      <div class="eye left"><div class="pupil" id="pupil-left"></div></div>
+      <div class="eye right"><div class="pupil" id="pupil-right"></div></div>
+      <div class="nose"></div>
+      <div class="mouth"></div>
     </div>
   </div>
 
-  <!-- VIEW 3: FORM LEMBUR -->
-  <div id="viewLembur" style="display: none;">
-    <button class="btn-back" onclick="switchView('viewLanding')">← Kembali</button>
-    <div class="soft-card">
-      <h2>Pengajuan Lembur</h2>
-      <form id="lemburForm">
-        
-        <!-- AUTOCOMPLETE DROPDOWN LEMBUR -->
-        <div class="form-group select-wrapper">
-          <label>ID Karyawan</label>
-          <input type="text" id="lembur_id" placeholder="Ketik ID Karyawan..." autocomplete="off" required>
-          <div id="drop_lembur_id" class="autocomplete-list"></div>
-        </div>
-        <div class="form-group select-wrapper">
-          <label>Nama Karyawan</label>
-          <input type="text" id="lembur_nama" placeholder="Ketik Nama Karyawan..." autocomplete="off" required>
-          <div id="drop_lembur_nama" class="autocomplete-list"></div>
-        </div>
-
-        <div class="form-group"><label>Tanggal Lembur</label><input type="date" id="tgl_lembur" required></div>
-        <div class="date-grid">
-          <div class="form-group"><label>Jam Awal</label><input type="time" id="waktu_mulai" required></div>
-          <div class="form-group"><label>Jam Selesai</label><input type="time" id="waktu_selesai" required></div>
-        </div>
-        <div class="form-group"><label>Alasan Lembur</label><textarea id="alasan_lembur" rows="2" placeholder="Cth: Rekap stok..." required></textarea></div>
-        <button type="submit" id="btnSubmitLembur">Kirim Data Lembur</button>
-      </form>
-    </div>
-
-    <div class="soft-card">
-      <div class="tab-nav">
-        <button class="tab-btn active" id="btnTabHari" onclick="switchTab('tabHari')">Per Hari</button>
-        <button class="tab-btn" id="btnTabKaryawan" onclick="switchTab('tabKaryawan')">Per Karyawan</button>
-      </div>
-      
-      <div id="tabHari" class="tab-content active"></div>
-      <div id="tabKaryawan" class="tab-content"></div>
-    </div>
-  </div>
-</div>
-
-<!-- POPUP MODAL KALENDER -->
-<div id="lemburModal" class="modal-overlay">
-  <div class="modal-box">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 15px; border-bottom: 1px solid rgba(0,0,0,0.1); padding-bottom: 10px;">
-      <h3 id="modalTitle" style="margin:0; font-size: 15px;">Daftar Lembur</h3>
-      <button onclick="closeModal()" style="width:auto; padding: 6px 12px; border-radius: 8px; background: rgba(0,0,0,0.05); color: var(--text-dark); font-size: 11px; box-shadow: none;">Tutup</button>
-    </div>
-    <div id="modalContent"></div>
-  </div>
-</div>
-
-<!-- SCRIPT LOGIKA -->
 <script>
-  function switchView(viewId) {
-    document.getElementById('viewLanding').style.display = 'none';
-    document.getElementById('viewIzin').style.display = 'none';
-    document.getElementById('viewLembur').style.display = 'none';
-    document.getElementById(viewId).style.display = 'block';
-    localStorage.setItem('arasaActiveView', viewId);
-    window.scrollTo(0, 0);
-  }
-
-  // ⚠️ GANTI API_URL DENGAN URL DEPLOYMENT BARU LU!
-  const API_URL = 'https://script.google.com/macros/s/AKfycbz0BupFs_75HESHJkKM4Uq_fYm9yTWUiWWpy6lIMQ79rodrZx6fGTQfGvM_kglZchaheQ/exec';
+  const eyes = document.querySelectorAll('.eye');
+  const pupils = document.querySelectorAll('.pupil');
+  const cat = document.getElementById('cat');
+  const paw = document.getElementById('paw');
   
-  let master = []; let historyData = []; let historyLemburData = [];
-  let groupedDataByDate = {}; 
+  let isAngry = false;
+  let mouseX = window.innerWidth / 2;
+  let mouseY = window.innerHeight / 2;
 
-  window.onload = async () => {
-    const savedView = localStorage.getItem('arasaActiveView') || 'viewLanding';
-    switchView(savedView);
+  // 1. SISTEM RADAR: Lirikan Mata Mengikuti Kursor
+  function updateEyePosition() {
+    if(isAngry) return; // Kalau lagi marah, mata fokus melotot, gak ngelirik
 
-    try {
-      const res = await fetch(API_URL); const data = await res.json();
-      master = data.master || []; historyData = data.history || []; historyLemburData = data.historyLembur || [];
+    eyes.forEach((eye, index) => {
+      const rect = eye.getBoundingClientRect();
+      const eyeCenterX = rect.left + rect.width / 2;
+      const eyeCenterY = rect.top + rect.height / 2;
 
-      // INISIALISASI AUTOCOMPLETE DENGAN STRICT MODE
-      setupStrictAutocomplete('izin_id', 'izin_nama', 'drop_izin_id', 'ID');
-      setupStrictAutocomplete('lembur_id', 'lembur_nama', 'drop_lembur_id', 'ID');
-      setupStrictAutocomplete('izin_nama', 'izin_id', 'drop_izin_nama', 'NAMA');
-      setupStrictAutocomplete('lembur_nama', 'lembur_id', 'drop_lembur_nama', 'NAMA');
-
-      renderHistory(); renderLemburTabs(); 
-    } catch (error) {
-      document.getElementById('listHistory').innerHTML = '<div style="text-align:center; color:#e53e3e;">Gagal terhubung ke Database.</div>';
-    }
-  };
-
-  function setupStrictAutocomplete(inputId, targetId, listId, mode) {
-    const input = document.getElementById(inputId);
-    const target = document.getElementById(targetId);
-    const list = document.getElementById(listId);
-
-    function renderList(dataArr) {
-      list.innerHTML = '';
-      if (dataArr.length === 0) {
-        list.innerHTML = '<div class="autocomplete-item" style="color:#e53e3e; font-weight:400; cursor:default;">❌ Tidak ditemukan</div>';
-      } else {
-        dataArr.forEach(k => {
-          const div = document.createElement('div');
-          div.className = 'autocomplete-item';
-          
-          if (mode === 'ID') div.innerHTML = `<strong>${k.id_karyawan}</strong>`;
-          else div.innerHTML = `<strong>${k.nama_karyawan}</strong>`;
-          
-          div.onclick = () => {
-            if (mode === 'ID') {
-              input.value = k.id_karyawan; target.value = k.nama_karyawan;
-            } else {
-              input.value = k.nama_karyawan; target.value = k.id_karyawan;
-            }
-            input.classList.remove('input-error'); target.classList.remove('input-error');
-            list.style.display = 'none';
-          };
-          list.appendChild(div);
-        });
-      }
-      list.style.display = 'block';
-    }
-
-    function doSearch() {
-      const val = input.value.toLowerCase();
-      let filtered = [];
-      if (mode === 'ID') filtered = master.filter(k => String(k.id_karyawan).toLowerCase().includes(val));
-      else filtered = master.filter(k => k.nama_karyawan.toLowerCase().includes(val));
-      renderList(filtered);
-      target.value = "";
-    }
-
-    function validateExactMatch() {
-      setTimeout(() => {
-        const val = input.value.toLowerCase(); let exactMatch = null;
-        if (mode === 'ID') exactMatch = master.find(k => String(k.id_karyawan).toLowerCase() === val);
-        else exactMatch = master.find(k => k.nama_karyawan.toLowerCase() === val);
-
-        if (exactMatch) {
-          if (mode === 'ID') target.value = exactMatch.nama_karyawan;
-          else target.value = exactMatch.id_karyawan;
-          input.classList.remove('input-error'); target.classList.remove('input-error');
-        } else {
-          target.value = ""; if(input.value !== "") input.classList.add('input-error');
-        }
-      }, 150);
-    }
-    input.addEventListener('focus', doSearch); input.addEventListener('input', doSearch); input.addEventListener('blur', validateExactMatch); 
-  }
-
-  document.addEventListener('click', function(e) {
-    if (!e.target.closest('.select-wrapper')) document.querySelectorAll('.autocomplete-list').forEach(el => el.style.display = 'none');
-  });
-
-  function renderHistory() {
-    const list = document.getElementById('listHistory'); list.innerHTML = '';
-    if (historyData.length === 0) return list.innerHTML = '<div style="text-align:center; color:var(--text-muted); font-size:13px;">Belum ada riwayat izin.</div>';
-    historyData.reverse().forEach(h => {
-      const statusValue = h.status ? h.status : 'PENDING';
-      list.innerHTML += `
-        <div class="history-card">
-          <span class="status-badge ${statusValue.replace(/\s+/g, '_')}">${statusValue}</span>
-          <div style="font-weight:700; font-size:14px; margin-bottom: 6px;">${h.nama || '-'} <span style="color:var(--text-muted); font-size:11px;">(#${h.id_karyawan || '-'})</span></div>
-          <div style="font-size:12px; color:#718096; font-weight: 500;">📅 ${h.tanggal_izin_mulai || '-'} s/d ${h.tanggal_izin_akhir || '-'}</div>
-          <div class="kategori-tag">${h.kategori || '-'}</div>
-        </div>`;
-    });
-  }
-
-  function switchTab(tabId) {
-    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-    document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-    document.getElementById(tabId).classList.add('active');
-    if(tabId === 'tabHari') document.getElementById('btnTabHari').classList.add('active');
-    if(tabId === 'tabKaryawan') document.getElementById('btnTabKaryawan').classList.add('active');
-  }
-
-  function toggleAcc(id) {
-    const el = document.getElementById(id); el.style.display = (el.style.display === 'block') ? 'none' : 'block';
-  }
-
-  function filterKaryawan() {
-    const input = document.getElementById('searchInputKaryawan').value.toLowerCase();
-    const items = document.querySelectorAll('#tabKaryawan .search-item');
-    items.forEach(item => {
-      const nama = item.getAttribute('data-nama'); const id = item.getAttribute('data-id');
-      if (nama.includes(input) || id.includes(input)) item.style.display = '';
-      else item.style.display = 'none';
-    });
-  }
-
-  // --- PARSER ULTIMATE (ANTI BUG SPASI & KOMA) ---
-  function parseDurasiToMins(val) {
-    if(!val) return 0;
-    let str = String(val).trim();
-    if (str.toLowerCase().includes('jam')) {
-      let h = 0, m = 0;
-      let matchJam = str.match(/(\d+)\s*Jam/i); let matchMenit = str.match(/(\d+)\s*Menit/i);
-      if(matchJam) h = parseInt(matchJam[1]); if(matchMenit) m = parseInt(matchMenit[1]);
-      return (h * 60) + m;
-    } else {
-      // Hapus semua spasi tak kasat mata & paksa koma jadi titik
-      let cleanStr = str.replace(/\s/g, '').replace(/,/g, '.');
-      let decimalHrs = parseFloat(cleanStr);
-      if (!isNaN(decimalHrs)) {
-        return Math.round(decimalHrs * 60);
-      }
-    }
-    return 0;
-  }
-  
-  function formatMinsToDurasi(totalMins) {
-    let h = Math.floor(totalMins / 60); let m = totalMins % 60; return `${h} Jam ${m} Menit`;
-  }
-
-  function getDurasiTeks(val) { return formatMinsToDurasi(parseDurasiToMins(val)); }
-
-  function openModal(dateStr) {
-    const records = groupedDataByDate[dateStr] || [];
-    document.getElementById('modalTitle').innerText = `Lembur: ${dateStr}`;
-    let html = '';
-    records.forEach(r => {
-      html += `<div style="padding: 12px 0; border-bottom: 1px dashed rgba(0,0,0,0.1); display:flex; justify-content:space-between; align-items:center;">
-        <span style="font-size: 13px; font-weight: 700; color: var(--text-dark);">👤 ${r.nama}</span>
-        <span style="font-size: 11px; color: #e94057; font-weight: 800; background: #fff0f2; padding: 4px 8px; border-radius: 6px;">${getDurasiTeks(r.durasi)}</span>
-      </div>`;
-    });
-    document.getElementById('modalContent').innerHTML = html;
-    
-    const modal = document.getElementById('lemburModal');
-    modal.style.display = 'flex';
-    setTimeout(() => { modal.style.opacity = '1'; modal.querySelector('.modal-box').style.transform = 'translateY(0)'; }, 10);
-    document.body.style.overflow = 'hidden'; 
-  }
-
-  function closeModal() {
-    const modal = document.getElementById('lemburModal');
-    modal.style.opacity = '0'; modal.querySelector('.modal-box').style.transform = 'translateY(20px)';
-    setTimeout(() => { modal.style.display = 'none'; }, 300);
-    document.body.style.overflow = ''; 
-  }
-
-  function renderLemburTabs() {
-    const boxHari = document.getElementById('tabHari');
-    const boxKaryawan = document.getElementById('tabKaryawan');
-    
-    const now = new Date(); const curYear = now.getFullYear(); const curMonth = now.getMonth();
-    const namaBulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
-    const currentBulanLemburStr = `${namaBulan[curMonth]} ${curYear}`;
-
-    const currentMonthData = historyLemburData.filter(r => r.bulan_lembur === currentBulanLemburStr);
-
-    const daysInMonth = new Date(curYear, curMonth + 1, 0).getDate();
-    let firstDay = new Date(curYear, curMonth, 1).getDay();
-    firstDay = (firstDay === 0) ? 6 : firstDay - 1; 
-
-    let htmlHari = `<div style="text-align:center; font-weight:800; margin-bottom:15px; color:var(--text-dark); font-size:14px;">${currentBulanLemburStr}</div>`;
-    htmlHari += `<div class="calendar-header"><div>Sn</div><div>Sl</div><div>Rb</div><div>Km</div><div>Jm</div><div>Sb</div><div>Mg</div></div><div class="calendar-grid">`;
-
-    groupedDataByDate = {}; 
-    for (let i = 0; i < firstDay; i++) { htmlHari += `<div class="cal-day empty"></div>`; } 
-
-    for (let day = 1; day <= daysInMonth; day++) {
-      const dateStr = `${curYear}-${String(curMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-      const dateStrAlt = `${String(day).padStart(2, '0')}/${String(curMonth + 1).padStart(2, '0')}/${curYear}`; 
+      // Hitung sudut dari tengah mata ke kursor
+      const angle = Math.atan2(mouseY - eyeCenterY, mouseX - eyeCenterX);
       
-      const records = currentMonthData.filter(r => r.tanggal_lembur === dateStr || r.tanggal_lembur === dateStrAlt);
-      groupedDataByDate[dateStr] = records;
+      // Batasi jarak pupil agar tidak keluar dari area putih mata
+      const maxDistance = 8; 
+      const distance = Math.min(maxDistance, Math.hypot(mouseX - eyeCenterX, mouseY - eyeCenterY) / 15);
 
-      const badgeClass = records.length > 0 ? 'red' : 'zero';
-      const hasDataClass = records.length > 0 ? 'has-data' : '';
-      const onClickFn = records.length > 0 ? `onclick="openModal('${dateStr}')"` : '';
+      const pupilX = Math.cos(angle) * distance;
+      const pupilY = Math.sin(angle) * distance;
 
-      htmlHari += `
-        <div class="cal-day ${hasDataClass}" ${onClickFn}>
-          <span style="font-size:12px; font-weight:700; color:var(--text-dark);">${day}</span>
-          <span class="cal-badge ${badgeClass}">${records.length}</span>
-        </div>`;
-    }
-    htmlHari += `</div>`;
-    boxHari.innerHTML = htmlHari;
-
-    if (currentMonthData.length === 0) { 
-      boxKaryawan.innerHTML = '<div style="text-align:center; color:var(--text-muted); font-size:13px; margin-top:15px;">Belum ada riwayat di bulan ini.</div>'; 
-    } else {
-      const groupKaryawan = {};
-      currentMonthData.forEach(r => {
-        const nama = r.nama || 'Unknown';
-        if(!groupKaryawan[nama]) groupKaryawan[nama] = { records: [], totalMins: 0, id: r.id_karyawan };
-        groupKaryawan[nama].records.push(r); groupKaryawan[nama].totalMins += parseDurasiToMins(r.durasi);
-      });
-
-      let htmlKaryawan = `
-        <div class="form-group" style="margin-top: 5px;">
-          <input type="text" id="searchInputKaryawan" placeholder="🔍 Cari ID atau Nama Karyawan..." onkeyup="filterKaryawan()">
-        </div>
-      `; 
-      let i_kar = 0;
-      for(const nama in groupKaryawan) {
-        const totalStr = formatMinsToDurasi(groupKaryawan[nama].totalMins);
-        const idKar = groupKaryawan[nama].id || '';
-        htmlKaryawan += `<div class="acc-item search-item" data-nama="${nama.toLowerCase()}" data-id="${idKar.toString().toLowerCase()}">
-          <div class="acc-header" onclick="toggleAcc('accKar-${i_kar}')">
-            <span>👤 ${nama} <span style="font-size:10px; color:var(--text-muted);">#${idKar}</span></span><span class="acc-badge">${totalStr}</span>
-          </div><div class="acc-body" id="accKar-${i_kar}">`;
-        groupKaryawan[nama].records.reverse().forEach(r => {
-          htmlKaryawan += `<div class="acc-row"><span style="font-weight:700;">📅 ${r.tanggal_lembur || '-'}</span><strong style="color:var(--text-dark);">${getDurasiTeks(r.durasi)}</strong></div>`;
-        });
-        htmlKaryawan += `</div></div>`; i_kar++;
-      }
-      boxKaryawan.innerHTML = htmlKaryawan;
-    }
+      pupils[index].style.transform = `translate(${pupilX}px, ${pupilY}px)`;
+    });
   }
 
-  function validateKaryawanMaster(idVal, namaVal) { return master.find(k => k.id_karyawan == idVal && k.nama_karyawan == namaVal); }
-
-  document.getElementById('izinForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const id_izin = document.getElementById('izin_id').value; const nama_izin = document.getElementById('izin_nama').value;
-    if(!validateKaryawanMaster(id_izin, nama_izin)) { alert("❌ Gagal: Pastikan ID dan Nama Karyawan dipilih dengan benar dari daftar yang tersedia!"); return; }
-    const btn = document.getElementById('btnSubmit'); btn.disabled = true; btn.innerText = 'Mengirim Data...';
-    const kategori = document.getElementById('kategori').value; const tglMulai = document.getElementById('tgl_mulai').value; const tglAkhir = document.getElementById('tgl_akhir').value; const alasan = document.getElementById('alasan').value;
-    const payload = { tipe_form: "izin", id_karyawan: id_izin, nama: nama_izin, tanggal_izin_mulai: tglMulai, tanggal_izin_akhir: tglAkhir, kategori: kategori, alasan: alasan };
-    try {
-      await fetch(API_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) });
-      const waTanggal = (tglMulai === tglAkhir) ? tglMulai : `${tglMulai} s/d ${tglAkhir}`;
-      const waText = `Halo kak elok, aku mohon ${kategori} di ${waTanggal} karena ${alasan}, mohon untuk segera memberikan keputusan, terima kasih!`;
-      alert('Pengajuan Izin Berhasil Disimpan! Dialihkan ke WhatsApp...'); window.location.href = `https://wa.me/628155138385?text=${encodeURIComponent(waText)}`;
-    } catch (error) { alert('Terjadi kesalahan.'); btn.disabled = false; btn.innerText = 'Kirim Pengajuan'; }
+  // Melacak pergerakan Mouse & Sentuhan layar HP
+  window.addEventListener('mousemove', (e) => {
+    mouseX = e.clientX; mouseY = e.clientY;
+    updateEyePosition();
+  });
+  window.addEventListener('touchmove', (e) => {
+    mouseX = e.touches[0].clientX; mouseY = e.touches[0].clientY;
+    updateEyePosition();
   });
 
-  document.getElementById('lemburForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const idInput = document.getElementById('lembur_id').value; const namaInput = document.getElementById('lembur_nama').value; const tglInput = document.getElementById('tgl_lembur').value;
-    if(!validateKaryawanMaster(idInput, namaInput)) { alert("❌ Gagal: Pastikan ID dan Nama Karyawan dipilih dengan benar dari daftar yang tersedia!"); return; }
-    const cekDuplikat = historyLemburData.find(h => h.id_karyawan == idInput && h.tanggal_lembur == tglInput);
-    if (cekDuplikat) return alert(`Gagal: Karyawan ini sudah input lembur pada tanggal ${tglInput}!`);
-    const btn = document.getElementById('btnSubmitLembur'); btn.disabled = true; btn.innerText = 'Menyimpan Data...';
-    const payload = { tipe_form: "lembur", id_karyawan: idInput, nama: namaInput, tanggal_lembur: tglInput, jam_awal: document.getElementById('waktu_mulai').value, jam_selesai: document.getElementById('waktu_selesai').value, alasan: document.getElementById('alasan_lembur').value };
-    try {
-      await fetch(API_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) });
-      alert('Data Lembur Berhasil Disimpan!'); location.reload(); 
-    } catch (error) { alert('Terjadi kesalahan.'); btn.disabled = false; btn.innerText = 'Kirim Data Lembur'; }
-  });
+  // 2. SISTEM NGAMUK: Mukul Kursor Saat Ditahan
+  function triggerAttack(x, y) {
+    isAngry = true;
+    cat.classList.add('angry');
+    document.body.classList.add('shake');
+
+    // Kembalikan posisi pupil ke tengah (karena mata nyipit marah)
+    pupils.forEach(p => p.style.transform = `translate(0px, 0px)`);
+
+    // Kalkulasi jarak dan sudut tangan kucing untuk memukul kursor
+    const catRect = cat.getBoundingClientRect();
+    // Titik pangkal tangan (bahu kucing)
+    const startX = catRect.left + 100; 
+    const startY = catRect.top + 120;
+
+    const angle = Math.atan2(y - startY, x - startX) * 180 / Math.PI;
+    const distance = Math.hypot(x - startX, y - startY);
+
+    // Rentangkan tangan memukul tepat ke koordinat sasaran
+    paw.style.width = (distance - 20) + 'px'; // -20px biar ujung cakarnya pas di kursor
+    paw.style.transform = `rotate(${angle}deg)`;
+  }
+
+  function calmDown() {
+    isAngry = false;
+    cat.classList.remove('angry');
+    document.body.classList.remove('shake');
+    // Tarik kembali tangan kucing
+    paw.style.width = '0px';
+    updateEyePosition();
+  }
+
+  // Memicu amukan pas layar ditahan (Klik kiri / Sentuh HP)
+  window.addEventListener('mousedown', (e) => triggerAttack(e.clientX, e.clientY));
+  window.addEventListener('touchstart', (e) => triggerAttack(e.touches[0].clientX, e.touches[0].clientY));
+
+  // Menenangkan kucing saat dilepas
+  window.addEventListener('mouseup', calmDown);
+  window.addEventListener('touchend', calmDown);
 </script>
 </body>
 </html>
