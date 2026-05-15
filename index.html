@@ -3,219 +3,495 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Migrasi Sistem - HR Arasa</title>
+  <title>HR Arasa - Portal Karyawan</title>
+  
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
 
-    body {
-      margin: 0; padding: 0; background: #0f172a; color: white;
-      font-family: 'Poppins', sans-serif; display: flex; flex-direction: column;
-      align-items: center; justify-content: center; min-height: 100vh;
-      overflow: hidden; user-select: none; /* Biar teks gak ke-block pas nahan klik */
+    :root { 
+      /* Modern Soft Gradient Background */
+      --bg-gradient: linear-gradient(140deg, #e0eafc 0%, #cfdef3 100%);
+      --glass-bg: rgba(255, 255, 255, 0.7);
+      --glass-border: rgba(255, 255, 255, 0.8);
+      --shadow-glass: 0 10px 40px rgba(0, 0, 0, 0.04);
+      --text-dark: #1e293b;
+      --text-muted: #64748b;
+      --btn-gradient: linear-gradient(135deg, #f43f5e 0%, #fb923c 100%); 
+      --input-bg: rgba(255, 255, 255, 0.9);
+      --input-border: #e2e8f0;
+      --card-bg: #ffffff;
+      --accent: #f43f5e;
     }
-
-    /* EFEK GETAR PAS KUCING NGAMUK */
-    body.shake { animation: screenShake 0.1s infinite; background: #1e1b4b; }
-
-    @keyframes screenShake {
-      0% { transform: translate(2px, 1px) rotate(0deg); }
-      10% { transform: translate(-1px, -2px) rotate(-1deg); }
-      20% { transform: translate(-3px, 0px) rotate(1deg); }
-      30% { transform: translate(0px, 2px) rotate(0deg); }
-      40% { transform: translate(1px, -1px) rotate(1deg); }
-      50% { transform: translate(-1px, 2px) rotate(-1deg); }
-      60% { transform: translate(-3px, 1px) rotate(0deg); }
-      70% { transform: translate(2px, 1px) rotate(-1deg); }
-      80% { transform: translate(-1px, -1px) rotate(1deg); }
-      90% { transform: translate(2px, 2px) rotate(0deg); }
-      100% { transform: translate(1px, -2px) rotate(-1deg); }
-    }
-
-    .text-container { text-align: center; z-index: 10; margin-bottom: 50px; pointer-events: none; }
-    .text-container h1 { font-size: 32px; font-weight: 800; margin: 0 0 10px 0; color: #f8fafc; letter-spacing: -1px; }
-    .text-container p { font-size: 14px; color: #94a3b8; margin: 0; max-width: 400px; line-height: 1.6; }
-
-    /* WADAH KUCING */
-    .cat-wrapper {
-      position: relative; width: 200px; height: 180px; z-index: 5;
-    }
-
-    /* TANGAN MUKUL (Disembunyikan awalnya) */
-    .paw-arm {
-      position: absolute; top: 120px; left: 100px; width: 0px; height: 16px;
-      background: #fb923c; transform-origin: left center; z-index: 20;
-      border-radius: 8px; opacity: 0; transition: width 0.1s ease-out, opacity 0.1s;
-      pointer-events: none;
-    }
-    .paw-arm::after {
-      content: ''; position: absolute; right: -15px; top: -10px; width: 35px; height: 35px;
-      background: #f97316; border-radius: 50%; box-shadow: -2px 2px 10px rgba(0,0,0,0.5);
-    }
-    /* Mode Mukul */
-    .cat-wrapper.angry .paw-arm { opacity: 1; }
-
-    /* KEPALA KUCING OYEN */
-    .head {
-      width: 160px; height: 140px; background: #fb923c;
-      border-radius: 45% 45% 45% 45%; position: absolute;
-      bottom: 0; left: 20px; z-index: 10;
-      box-shadow: inset -10px -15px 20px rgba(0,0,0,0.2);
-      transition: 0.2s;
-    }
-
-    /* TELINGA */
-    .ear {
-      width: 0; height: 0; border-left: 30px solid transparent; border-right: 30px solid transparent;
-      border-bottom: 50px solid #fb923c; position: absolute; top: -15px; transition: 0.2s;
-    }
-    .ear.left { left: -5px; transform: rotate(-25deg); }
-    .ear.right { right: -5px; transform: rotate(25deg); }
     
-    .ear-inner {
-      width: 0; height: 0; border-left: 15px solid transparent; border-right: 15px solid transparent;
-      border-bottom: 35px solid #fecaca; position: absolute; top: 10px; left: -15px;
+    body { 
+      font-family: 'Poppins', sans-serif; 
+      background: var(--bg-gradient); 
+      color: var(--text-dark); 
+      margin: 0; display: flex; justify-content: center; 
+      min-height: 100vh; background-attachment: fixed; 
+      -webkit-font-smoothing: antialiased;
     }
 
-    /* MATA & LIRIKAN PUPIL */
-    .eye {
-      width: 40px; height: 40px; background: white; border-radius: 50%;
-      position: absolute; top: 50px; display: flex; align-items: center; justify-content: center;
-      overflow: hidden; transition: 0.2s;
-    }
-    .eye.left { left: 30px; }
-    .eye.right { right: 30px; }
+    .mobile-frame { width: 100%; max-width: 480px; padding: 25px 20px; box-sizing: border-box; position: relative; }
     
-    .pupil {
-      width: 22px; height: 22px; background: #0f172a; border-radius: 50%;
-      transition: transform 0.05s linear; /* Biar ngikutin kursor gak delay */
+    .soft-card { 
+      background: var(--glass-bg); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); 
+      border: 1px solid var(--glass-border); border-radius: 28px; padding: 25px; 
+      box-shadow: var(--shadow-glass); margin-bottom: 24px; transition: transform 0.3s ease;
     }
 
-    /* HIDUNG & MULUT */
-    .nose {
-      width: 14px; height: 10px; background: #fca5a5; border-radius: 50% 50% 50% 50% / 30% 30% 70% 70%;
-      position: absolute; top: 85px; left: 73px;
+    .brand-area { text-align: center; margin-bottom: 35px; margin-top: 10px; }
+    .brand-area h1 { margin: 0; font-size: 32px; font-weight: 800; color: #0f172a; letter-spacing: -1.2px; }
+    .brand-area p { color: var(--text-muted); font-size: 14px; font-weight: 500; margin-top: 4px; }
+    
+    h2 { font-weight: 800; margin-top: 0; font-size: 20px; color: #0f172a; letter-spacing: -0.5px; margin-bottom: 20px;}
+    h3 { font-weight: 700; margin-top: 0; font-size: 16px; color: #334155;}
+    
+    .form-group { margin-bottom: 20px; position: relative; }
+    label { display: block; font-size: 12px; font-weight: 700; text-transform: uppercase; margin-bottom: 8px; color: var(--text-muted); letter-spacing: 0.5px;}
+    
+    select, input, textarea { 
+      width: 100%; padding: 15px 18px; border: 2px solid var(--input-border); 
+      border-radius: 16px; font-size: 14px; box-sizing: border-box; 
+      background: var(--input-bg); color: var(--text-dark); font-weight: 600; outline: none; transition: all 0.3s ease; 
+      font-family: 'Poppins', sans-serif; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
     }
-    .mouth {
-      width: 20px; height: 10px; border-bottom: 3px solid #0f172a; border-radius: 50%;
-      position: absolute; top: 95px; left: 70px; transition: 0.2s;
+    select:focus, input:focus, textarea:focus { 
+      border-color: var(--accent); background: white; box-shadow: 0 0 0 4px rgba(244, 63, 94, 0.15); 
     }
+    .date-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+    
+    button.btn-primary { 
+      width: 100%; padding: 18px; background: var(--btn-gradient); color: white; border: none; 
+      border-radius: 18px; font-size: 16px; font-weight: 700; cursor: pointer; transition: all 0.3s ease; 
+      box-shadow: 0 10px 25px rgba(244, 63, 94, 0.3); font-family: 'Poppins', sans-serif; letter-spacing: 0.5px;
+    }
+    button.btn-primary:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(244, 63, 94, 0.4); }
+    button.btn-primary:active { transform: translateY(0); }
+    button.btn-primary:disabled { background: #cbd5e0; cursor: not-allowed; box-shadow: none; transform: none; color: #94a3b8; }
+    
+    .btn-menu { 
+      display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; font-size: 16px; font-weight: 700; 
+      padding: 22px; margin-bottom: 16px; background: rgba(255,255,255,0.8); backdrop-filter: blur(16px); 
+      color: var(--text-dark); border-radius: 20px; border: 1px solid var(--glass-border); box-shadow: var(--shadow-glass); 
+      cursor: pointer; transition: all 0.3s ease; 
+    }
+    .btn-menu:hover { background: white; color: var(--accent); transform: translateY(-3px); box-shadow: 0 15px 30px rgba(0,0,0,0.06);}
+    
+    .btn-back { 
+      background: white; color: var(--text-dark); margin-bottom: 24px; display: inline-flex; align-items: center; justify-content: center;
+      padding: 10px 20px; font-size: 13px; border-radius: 14px; font-weight: 600; 
+      border: 1px solid var(--input-border); cursor: pointer; transition: 0.2s; box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+    }
+    .btn-back:hover { background: #f8fafc; transform: translateX(-4px); }
+    
+    /* HISTORY CARD MODERNIZATION */
+    .history-card { 
+      padding: 18px; border-radius: 20px; border: 1px solid var(--input-border); margin-bottom: 15px; 
+      position: relative; background: rgba(255,255,255,0.8); transition: 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+    }
+    .status-badge { position: absolute; top: 18px; right: 18px; font-size: 10px; font-weight: 800; padding: 6px 12px; border-radius: 10px; text-transform: uppercase; letter-spacing: 0.5px;}
+    .history-title { font-weight: 800; font-size: 15px; margin-bottom: 8px; padding-right: 95px; line-height: 1.3; color: #0f172a;}
+    
+    .PENDING { background: #fef3c7; color: #b45309; }
+    .DISETUJUI, .IZIN_DIBERIKAN { background: #d1fae5; color: #065f46; }
+    .DITOLAK, .IZIN_TIDAK_DIBERIKAN { background: #fee2e2; color: #991b1b; }
+    
+    .kategori-tag { display: inline-block; background: #fff1f2; color: var(--accent); padding: 5px 12px; border-radius: 8px; font-size: 11px; font-weight: 800; margin-top: 10px; border: 1px dashed #fecdd3;}
+    .history-header { font-size: 16px; border-bottom: 2px dashed var(--input-border); padding-bottom: 12px; color: var(--text-dark); margin-bottom: 18px;}
+    
+    /* TABS */
+    .tab-nav { display: flex; gap: 10px; margin-bottom: 20px; background: rgba(255,255,255,0.5); padding: 6px; border-radius: 18px; border: 1px solid var(--glass-border);}
+    .tab-btn { flex: 1; padding: 12px 10px; border-radius: 14px; font-size: 13px; font-weight: 700; cursor: pointer; background: transparent; border: none; color: var(--text-muted); transition: 0.3s;}
+    .tab-btn.active { background: white; color: var(--accent); box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+    .tab-content { display: none; animation: fadeIn 0.3s ease;}
+    .tab-content.active { display: block; }
 
-    /* =========== MODE NGAMUK (ANGRY) =========== */
-    .cat-wrapper.angry .head { background: #ea580c; box-shadow: inset -10px -15px 20px rgba(0,0,0,0.4); }
-    .cat-wrapper.angry .ear.left { transform: rotate(-50deg) translateY(15px); border-bottom-color: #ea580c;}
-    .cat-wrapper.angry .ear.right { transform: rotate(50deg) translateY(15px); border-bottom-color: #ea580c;}
-    .cat-wrapper.angry .eye { 
-      height: 15px; top: 62px; background: #fef08a; /* Mata nyipit kuning marah */
-      border-radius: 5px; transform: rotate(10deg);
+    /* CALENDAR MODERNIZATION FIX */
+    .calendar-container { background: rgba(255,255,255,0.6); border: 1px solid var(--input-border); border-radius: 20px; padding: 15px; }
+    .calendar-header { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-size: 11px; font-weight: 800; margin-bottom: 10px; color: var(--text-muted); text-transform: uppercase;}
+    .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+    .cal-day { 
+      aspect-ratio: 1 / 1; /* PERBAIKAN: MEMAKSA KOTAK SELALU PERSEGI/SQUARE DI SEMUA HP */
+      background: white; border: 1px solid var(--input-border); border-radius: 14px; 
+      display:flex; flex-direction:column; align-items:center; justify-content:center; transition: 0.2s;
     }
-    .cat-wrapper.angry .eye.left { transform: rotate(15deg); }
-    .cat-wrapper.angry .eye.right { transform: rotate(-15deg); }
-    .cat-wrapper.angry .pupil { width: 10px; height: 10px; background: #b91c1c; }
-    .cat-wrapper.angry .mouth { width: 30px; height: 20px; background: #450a0a; border-radius: 50%; top: 100px; left: 65px; border: none;}
+    .cal-day.empty { background: transparent; border: none; }
+    .cal-day.has-data { cursor: pointer; border-color: #fecdd3; background: #fff1f2;}
+    .cal-day.has-data:hover { border-color: var(--accent); transform: scale(1.05); box-shadow: 0 4px 12px rgba(244,63,94,0.15);}
+    .cal-date-num { font-size: 13px; font-weight: 800; color: var(--text-dark);}
+    .cal-badge { font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 6px; margin-top: 2px; }
+    .cal-badge.zero { background: transparent; color: transparent; }
+    .cal-badge.red { background: var(--accent); color: white; }
+
+    /* ACCORDION */
+    .acc-item { background: white; border-radius: 18px; margin-bottom: 12px; border: 1px solid var(--input-border); overflow: hidden; transition: 0.3s; box-shadow: 0 2px 8px rgba(0,0,0,0.02);}
+    .acc-header { padding: 16px 18px; font-weight: 700; color: #0f172a; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 14px;}
+    .acc-badge { font-size:11px; background: #f8fafc; padding: 6px 12px; border-radius: 10px; border: 1px solid #e2e8f0; color: var(--text-dark); font-weight: 800;}
+    .acc-body { display: none; padding: 0 18px 18px 18px; }
+    .acc-row { border-top: 1px dashed #e2e8f0; padding: 14px 0 0 0; margin-top: 14px; font-size: 12px; color: #475569; display: flex; justify-content: space-between; align-items: center;}
+
+    /* MODAL MODERNIZATION */
+    .modal-overlay { position: fixed; top:0; left:0; right:0; bottom:0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(8px); z-index: 9999; display: none; align-items: center; justify-content: center; opacity: 0; transition: 0.3s; }
+    .modal-box { background: white; width: 85%; max-width: 340px; border-radius: 28px; padding: 30px; box-shadow: 0 25px 50px rgba(0,0,0,0.25); text-align: center; transform: translateY(20px); transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);}
+    .modal-overlay.active .modal-box { transform: translateY(0); }
+    .btn-pop { padding: 14px 24px; border: none; border-radius: 14px; font-weight: 700; font-size: 14px; cursor: pointer; min-width: 110px; transition: 0.2s; font-family: 'Poppins';}
+    .btn-pop-primary { background: var(--accent); color: white; box-shadow: 0 4px 15px rgba(244,63,94,0.3);}
+    .btn-pop-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(244,63,94,0.4);}
+    .btn-pop-secondary { background: #f1f5f9; color: #475569; }
+    .btn-pop-secondary:hover { background: #e2e8f0; }
+
+    /* AUTOCOMPLETE */
+    .select-wrapper { position: relative; }
+    .autocomplete-list { position: absolute; top: calc(100% + 5px); left: 0; right: 0; background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(16px); border: 1px solid var(--input-border); border-radius: 16px; max-height: 220px; overflow-y: auto; z-index: 1000; display: none; box-shadow: 0 10px 30px rgba(0,0,0,0.1); padding: 8px 0;}
+    .autocomplete-item { padding: 12px 18px; font-size: 13px; font-weight: 600; color: #334155; cursor: pointer; border-bottom: 1px solid #f1f5f9; display: flex; flex-direction: column;}
+    .autocomplete-item:last-child { border-bottom: none; }
+    .autocomplete-item:hover { background: #fff1f2; color: var(--accent); padding-left: 22px; transition: 0.2s;}
+    .input-error { border-color: #ef4444 !important; background: #fef2f2 !important; }
+
+    /* CHECKBOX CUSTOM */
+    .check-box-wrap { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; background: rgba(255,255,255,0.7); padding: 16px; border-radius: 16px; border: 2px dashed #cbd5e0; cursor: pointer; transition: 0.2s;}
+    .check-box-wrap:hover { border-color: #94a3b8; background: white;}
+    .check-box-wrap input[type="checkbox"] { width: 22px; height: 22px; margin: 0; cursor: pointer; accent-color: var(--accent); }
+    .check-box-wrap span { font-size: 13px; font-weight: 700; color: #334155; cursor: pointer; }
+    
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
   </style>
 </head>
 <body>
 
-  <div class="text-container">
-    <h1>Nyuwun Pangapunten</h1>
-    <p>Situs web iki lagi direnovasi. Nyuwun pangapunten amarga ana gangguan. Situs web iki bakal bisa diakses maneh tanggal 14 Mei 2026, jam 13.00.</p>
+<div class="mobile-frame">
+  <div class="brand-area">
+    <h1>HR ARASA</h1>
+    <p>Portal Sistem Informasi Pegawai</p>
   </div>
 
-  <div class="cat-wrapper" id="cat">
-    <div class="paw-arm" id="paw"></div>
+  <div id="viewLanding" style="display: none;">
+    <div class="soft-card" style="text-align: center; margin-bottom: 30px;">
+      <h2 style="margin-bottom: 8px;">Hello Tim Arasa 👋</h2>
+      <p style="font-size: 13px; font-weight: 500; color: var(--text-muted); margin-top: 0;">Pilih menu layanan di bawah ini</p>
+    </div>
+    <div class="btn-menu" onclick="switchView('viewIzin')">📄 Formulir Pengajuan Izin</div>
+    <div class="btn-menu" onclick="switchView('viewLembur')">⏱️ Formulir Data Lembur</div>
+  </div>
 
-    <div class="head">
-      <div class="ear left"><div class="ear-inner"></div></div>
-      <div class="ear right"><div class="ear-inner"></div></div>
-      <div class="eye left"><div class="pupil" id="pupil-left"></div></div>
-      <div class="eye right"><div class="pupil" id="pupil-right"></div></div>
-      <div class="nose"></div>
-      <div class="mouth"></div>
+  <div id="viewIzin" style="display: none;">
+    <div class="btn-back" onclick="switchView('viewLanding')">← Kembali ke Menu</div>
+    <div class="soft-card">
+      <h2>Pengajuan Izin</h2>
+      <form id="izinForm">
+        <div class="form-group select-wrapper"><label>ID Karyawan</label><input type="text" id="izin_id" placeholder="Ketik ID Karyawan..." autocomplete="off" required><div id="drop_izin_id" class="autocomplete-list"></div></div>
+        <div class="form-group select-wrapper"><label>Nama Lengkap</label><input type="text" id="izin_nama" placeholder="Ketik Nama Karyawan..." autocomplete="off" required><div id="drop_izin_nama" class="autocomplete-list"></div></div>
+        
+        <div class="form-group">
+          <label>Kategori Izin</label>
+          <select id="kategori" required>
+            <option value="">Pilih Kategori...</option>
+            <option value="Sakit">Sakit</option>
+            <option value="Izin">Izin</option>
+            <option value="Abnormal case">Abnormal case</option>
+          </select>
+        </div>
+
+        <label class="check-box-wrap">
+          <input type="checkbox" id="izinSatuHari" onchange="syncTanggalIzin()">
+          <span>Izin hanya untuk 1 hari</span>
+        </label>
+
+        <div class="date-grid">
+          <div class="form-group"><label>Tanggal Mulai</label><input type="date" id="tgl_mulai" required oninput="syncTanggalIzin()"></div>
+          <div class="form-group"><label>Tanggal Akhir</label><input type="date" id="tgl_akhir" required></div>
+        </div>
+        <div class="form-group"><label>Detail Alasan</label><textarea id="alasan" rows="3" placeholder="Jelaskan alasan izin Anda..." required></textarea></div>
+        <button type="submit" class="btn-primary" id="btnSubmit">Kirim Pengajuan</button>
+      </form>
+    </div>
+    
+    <div class="soft-card"><h3 class="history-header">Riwayat Izin Anda</h3><div id="listHistory"><div style="text-align:center; font-size:13px; color:#94a3b8;">Memuat data...</div></div></div>
+  </div>
+
+  <div id="viewLembur" style="display: none;">
+    <div class="btn-back" onclick="switchView('viewLanding')">← Kembali ke Menu</div>
+    <div class="soft-card">
+      <h2>Input Data Lembur</h2>
+      <form id="lemburForm">
+        <div class="form-group select-wrapper"><label>ID Karyawan</label><input type="text" id="lembur_id" placeholder="Ketik ID Karyawan..." autocomplete="off" required><div id="drop_lembur_id" class="autocomplete-list"></div></div>
+        <div class="form-group select-wrapper"><label>Nama Lengkap</label><input type="text" id="lembur_nama" placeholder="Ketik Nama Karyawan..." autocomplete="off" required><div id="drop_lembur_nama" class="autocomplete-list"></div></div>
+        
+        <div class="form-group">
+          <label>Tanggal Lembur (Maksimal Hari Ini)</label>
+          <input type="date" id="tgl_lembur" required>
+        </div>
+        
+        <div class="date-grid">
+          <div class="form-group"><label>Jam Mulai</label><input type="time" id="waktu_mulai" required></div>
+          <div class="form-group"><label>Jam Selesai</label><input type="time" id="waktu_selesai" required></div>
+        </div>
+        <div class="form-group"><label>Pekerjaan Lembur (Alasan)</label><textarea id="alasan_lembur" rows="2" placeholder="Cth: Rekap stok, membersihkan area..." required></textarea></div>
+        <button type="submit" class="btn-primary" id="btnSubmitLembur">Kirim Data Lembur</button>
+      </form>
+    </div>
+
+    <div class="soft-card">
+      <div class="tab-nav">
+        <button class="tab-btn active" id="btnTabHari" onclick="switchTab('tabHari')">Kalender</button>
+        <button class="tab-btn" id="btnTabKaryawan" onclick="switchTab('tabKaryawan')">Per Karyawan</button>
+      </div>
+      <div id="tabHari" class="tab-content active"></div>
+      <div id="tabKaryawan" class="tab-content"></div>
     </div>
   </div>
+</div>
+
+<div id="lemburModal" class="modal-overlay" style="z-index: 10000;">
+  <div class="modal-box" style="text-align: left; max-width: 360px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px; border-bottom: 2px dashed #e2e8f0; padding-bottom: 15px;">
+      <h3 id="modalTitle" style="margin:0; font-size: 16px; color:#0f172a; font-weight:800;">Daftar Lembur</h3>
+      <button onclick="closeModal('lemburModal')" style="width:auto; padding: 8px 14px; border-radius: 10px; background: #f1f5f9; color: #475569; font-size: 12px; border:none; font-weight:700; cursor:pointer; transition:0.2s;">Tutup</button>
+    </div>
+    <div id="modalContent"></div>
+  </div>
+</div>
+
+<div id="popupOverlay" class="modal-overlay" style="z-index: 99999;">
+  <div class="modal-box">
+    <div id="popIcon" style="font-size: 40px; margin-bottom: 10px;">🔔</div>
+    <h3 id="popTitle" style="margin-top:0; color:#0f172a; font-size: 18px; font-weight:800;">Notifikasi</h3>
+    <p id="popMsg" style="font-size:14px; color:#475569; margin-bottom:25px; line-height:1.5;"></p>
+    <div id="popBtns" style="display:flex; gap:12px; justify-content:center;"></div>
+  </div>
+</div>
 
 <script>
-  const eyes = document.querySelectorAll('.eye');
-  const pupils = document.querySelectorAll('.pupil');
-  const cat = document.getElementById('cat');
-  const paw = document.getElementById('paw');
+  // --- INJEKSI ATURAN TANGGAL MAKSIMAL HARI INI ---
+  function setMaxDateLembur() {
+    const today = new Date();
+    // Format YYYY-MM-DD sesuai standar <input type="date"> zona waktu lokal
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    const maxDateStr = `${year}-${month}-${day}`;
+    document.getElementById('tgl_lembur').setAttribute('max', maxDateStr);
+  }
+
+  function switchView(viewId) {
+    document.getElementById('viewLanding').style.display = 'none'; document.getElementById('viewIzin').style.display = 'none'; document.getElementById('viewLembur').style.display = 'none';
+    document.getElementById(viewId).style.display = 'block'; localStorage.setItem('arasaActiveView', viewId); window.scrollTo(0, 0);
+  }
+
+  // --- PENERJEMAH BAHASA MANUSIA (UI FORMATTER) ---
+  function formatTeksJam(val) {
+    if(!val) return "0 Menit";
+    let totalMenit = Math.round(parseFloat(val) * 60);
+    let j = Math.floor(totalMenit / 60);
+    let m = totalMenit % 60;
+    if(j > 0 && m > 0) return `${j} Jam ${m} Menit`;
+    if(j > 0) return `${j} Jam`;
+    return `${m} Menit`;
+  }
+
+  const SUPABASE_URL = 'https://dhlmzugrqvrmoicbnmpn.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_4e2ckBZ-OzOaF4LBIS1ZTQ_y6Ve1AOh';
+  const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
   
-  let isAngry = false;
-  let mouseX = window.innerWidth / 2;
-  let mouseY = window.innerHeight / 2;
+  let master = []; let historyData = []; let historyLemburData = []; let groupedDataByDate = {}; 
 
-  // 1. SISTEM RADAR: Lirikan Mata Mengikuti Kursor
-  function updateEyePosition() {
-    if(isAngry) return; // Kalau lagi marah, mata fokus melotot, gak ngelirik
+  window.onload = async () => { 
+    setMaxDateLembur(); // Panggil fungsi max date
+    const savedView = localStorage.getItem('arasaActiveView') || 'viewLanding'; 
+    switchView(savedView); 
+    await loadInitialData(); 
+  };
 
-    eyes.forEach((eye, index) => {
-      const rect = eye.getBoundingClientRect();
-      const eyeCenterX = rect.left + rect.width / 2;
-      const eyeCenterY = rect.top + rect.height / 2;
+  function showCustomAlert(msg, type="info") {
+    const ov = document.getElementById('popupOverlay'); 
+    document.getElementById('popTitle').innerText = type === "error" ? "Peringatan" : "Notifikasi"; 
+    document.getElementById('popIcon').innerText = type === "error" ? "❌" : "🔔";
+    document.getElementById('popMsg').innerText = msg;
+    document.getElementById('popBtns').innerHTML = `<button class="btn-pop btn-pop-primary" onclick="closePop()">OK Mengerti</button>`;
+    ov.style.display = 'flex'; setTimeout(() => { ov.style.opacity = '1'; ov.classList.add('active'); }, 10);
+  }
 
-      // Hitung sudut dari tengah mata ke kursor
-      const angle = Math.atan2(mouseY - eyeCenterY, mouseX - eyeCenterX);
-      
-      // Batasi jarak pupil agar tidak keluar dari area putih mata
-      const maxDistance = 8; 
-      const distance = Math.min(maxDistance, Math.hypot(mouseX - eyeCenterX, mouseY - eyeCenterY) / 15);
+  function showCustomConfirm(msg, callback) {
+    const ov = document.getElementById('popupOverlay'); 
+    document.getElementById('popTitle').innerText = "Konfirmasi"; 
+    document.getElementById('popIcon').innerText = "❓";
+    document.getElementById('popMsg').innerText = msg;
+    document.getElementById('popBtns').innerHTML = `
+      <button class="btn-pop btn-pop-secondary" onclick="closePop()">Batal</button>
+      <button class="btn-pop btn-pop-primary" id="btnPopConfirm">Yakin, Kirim</button>
+    `;
+    document.getElementById('btnPopConfirm').onclick = () => { closePop(); callback(); }; 
+    ov.style.display = 'flex'; setTimeout(() => { ov.style.opacity = '1'; ov.classList.add('active'); }, 10);
+  }
 
-      const pupilX = Math.cos(angle) * distance;
-      const pupilY = Math.sin(angle) * distance;
+  function closePop() { const ov = document.getElementById('popupOverlay'); ov.classList.remove('active'); ov.style.opacity = '0'; setTimeout(() => ov.style.display = 'none', 300); }
+  function closeModal(id) { const md = document.getElementById(id); md.classList.remove('active'); md.style.opacity = '0'; setTimeout(() => md.style.display = 'none', 300); }
 
-      pupils[index].style.transform = `translate(${pupilX}px, ${pupilY}px)`;
+  function syncTanggalIzin() {
+    const isChecked = document.getElementById('izinSatuHari').checked; const tglMulai = document.getElementById('tgl_mulai'); const tglAkhir = document.getElementById('tgl_akhir');
+    if (isChecked) { tglAkhir.value = tglMulai.value; tglAkhir.readOnly = true; tglAkhir.style.background = '#f1f5f9'; tglAkhir.style.color = '#94a3b8'; } 
+    else { tglAkhir.readOnly = false; tglAkhir.style.background = 'var(--input-bg)'; tglAkhir.style.color = 'var(--text-dark)'; }
+  }
+
+  async function loadInitialData() {
+    try {
+      const [resMaster, resIzin, resLembur] = await Promise.all([
+        db.from('master_data').select('*').order('nama_karyawan'),
+        db.from('data_izin').select('*').order('created_at', { ascending: false }),
+        db.from('data_lembur').select('*').order('tanggal_lembur', { ascending: false })
+      ]);
+      master = resMaster.data || []; historyData = resIzin.data || []; historyLemburData = resLembur.data || [];
+      setupStrictAutocomplete('izin_id', 'izin_nama', 'drop_izin_id', 'ID'); setupStrictAutocomplete('lembur_id', 'lembur_nama', 'drop_lembur_id', 'ID');
+      setupStrictAutocomplete('izin_nama', 'izin_id', 'drop_izin_nama', 'NAMA'); setupStrictAutocomplete('lembur_nama', 'lembur_id', 'drop_lembur_nama', 'NAMA');
+      renderHistory(); renderLemburTabs(); 
+    } catch (error) { document.getElementById('listHistory').innerHTML = '<div style="text-align:center; color:#ef4444; font-weight:600;">Gagal terhubung ke Database Supabase. Silakan muat ulang.</div>'; }
+  }
+
+  function setupStrictAutocomplete(inputId, targetId, listId, mode) {
+    const input = document.getElementById(inputId); const target = document.getElementById(targetId); const list = document.getElementById(listId);
+    function renderList(dataArr) {
+      list.innerHTML = '';
+      if (dataArr.length === 0) { list.innerHTML = '<div class="autocomplete-item" style="color:#ef4444; font-weight:600; cursor:default;">❌ Tidak ditemukan di master data</div>'; } 
+      else { dataArr.forEach(k => { const div = document.createElement('div'); div.className = 'autocomplete-item'; div.innerHTML = mode === 'ID' ? `<strong style="font-size:14px; color:var(--accent);">${k.id_karyawan}</strong> <span style="font-size:11px; color:#64748b;">${k.nama_karyawan}</span>` : `<strong style="font-size:14px; color:var(--text-dark);">${k.nama_karyawan}</strong> <span style="font-size:11px; color:#64748b;">ID: ${k.id_karyawan}</span>`;
+          div.onclick = () => { if (mode === 'ID') { input.value = k.id_karyawan; target.value = k.nama_karyawan; } else { input.value = k.nama_karyawan; target.value = k.id_karyawan; } input.classList.remove('input-error'); target.classList.remove('input-error'); list.style.display = 'none'; }; list.appendChild(div); }); }
+      list.style.display = 'block';
+    }
+    function doSearch() { const val = input.value.toLowerCase(); let filtered = []; if (mode === 'ID') filtered = master.filter(k => String(k.id_karyawan).toLowerCase().includes(val)); else filtered = master.filter(k => k.nama_karyawan.toLowerCase().includes(val)); renderList(filtered); target.value = ""; }
+    function validateExactMatch() { setTimeout(() => { const val = input.value.toLowerCase(); let exactMatch = null; if (mode === 'ID') exactMatch = master.find(k => String(k.id_karyawan).toLowerCase() === val); else exactMatch = master.find(k => k.nama_karyawan.toLowerCase() === val);
+        if (exactMatch) { if (mode === 'ID') target.value = exactMatch.nama_karyawan; else target.value = exactMatch.id_karyawan; input.classList.remove('input-error'); target.classList.remove('input-error'); } 
+        else { target.value = ""; if(input.value !== "") input.classList.add('input-error'); } }, 200); }
+    input.addEventListener('focus', doSearch); input.addEventListener('input', doSearch); input.addEventListener('blur', validateExactMatch); 
+  }
+  document.addEventListener('click', function(e) { if (!e.target.closest('.select-wrapper')) document.querySelectorAll('.autocomplete-list').forEach(el => el.style.display = 'none'); });
+
+  function renderHistory() {
+    const list = document.getElementById('listHistory'); 
+    if (historyData.length === 0) { list.innerHTML = '<div style="text-align:center; color:#94a3b8; font-size:13px; font-weight:500;">Belum ada riwayat izin tersimpan.</div>'; return; }
+    let html = '';
+    historyData.forEach(h => {
+      const statusValue = h.status ? h.status : 'PENDING';
+      html += `
+        <div class="history-card"><span class="status-badge ${statusValue.replace(/\s+/g, '_')}">${statusValue}</span><div class="history-title">${h.nama || '-'} <span style="color:var(--text-muted); font-size:11px; font-weight:600;">(#${h.id_karyawan || '-'})</span></div><div style="font-size:12px; color:#475569; font-weight: 600;">📅 ${h.tanggal_izin_mulai || '-'} s/d ${h.tanggal_izin_akhir || '-'}</div><div class="kategori-tag">${h.kategori_izin || '-'}</div></div>`;
+    }); list.innerHTML = html;
+  }
+
+  function switchTab(tabId) {
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active')); document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active')); document.getElementById(tabId).classList.add('active');
+    if(tabId === 'tabHari') document.getElementById('btnTabHari').classList.add('active'); if(tabId === 'tabKaryawan') document.getElementById('btnTabKaryawan').classList.add('active');
+  }
+
+  function toggleAcc(id) { const el = document.getElementById(id); el.style.display = (el.style.display === 'block') ? 'none' : 'block'; }
+  function filterKaryawan() { const input = document.getElementById('searchInputKaryawan').value.toLowerCase(); document.querySelectorAll('#tabKaryawan .search-item').forEach(item => { const nama = item.getAttribute('data-nama'); const id = item.getAttribute('data-id'); item.style.display = (nama.includes(input) || id.includes(input)) ? '' : 'none'; }); }
+
+  function openModal(dateStr) {
+    const records = groupedDataByDate[dateStr] || []; document.getElementById('modalTitle').innerText = `Data Lembur: ${dateStr}`;
+    let html = '';
+    records.forEach(r => {
+      html += `
+      <div style="padding: 14px 0; border-bottom: 1px dashed #e2e8f0; display:flex; justify-content:space-between; align-items:center;">
+        <span style="font-size: 14px; font-weight: 800; color: #1e293b;">👤 ${r.nama}</span>
+        <div style="text-align:right;">
+          <div style="font-size: 11px; color: white; font-weight: 800; background: var(--accent); padding: 4px 10px; border-radius: 8px; display:inline-block; margin-bottom:4px; box-shadow: 0 2px 8px rgba(244,63,94,0.2);">${formatTeksJam(r.durasi)}</div>
+          <div style="font-size: 11px; color: #64748b; font-weight: 700;">${r.jam_awal} - ${r.jam_selesai}</div>
+        </div>
+      </div>`;
+    }); document.getElementById('modalContent').innerHTML = html;
+    const modal = document.getElementById('lemburModal'); modal.style.display = 'flex'; setTimeout(() => { modal.style.opacity = '1'; modal.classList.add('active'); }, 10);
+  }
+
+  function renderLemburTabs() {
+    const boxHari = document.getElementById('tabHari'); const boxKaryawan = document.getElementById('tabKaryawan');
+    const now = new Date(); const curYear = now.getFullYear(); const curMonth = now.getMonth();
+    const namaBulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember']; const currentBulanLemburStr = `${namaBulan[curMonth]} ${curYear}`;
+    const currentMonthData = historyLemburData.filter(r => r.bulan_lembur === currentBulanLemburStr && r.status === 'DISETUJUI');
+
+    const daysInMonth = new Date(curYear, curMonth + 1, 0).getDate(); let firstDay = new Date(curYear, curMonth, 1).getDay(); firstDay = (firstDay === 0) ? 6 : firstDay - 1; 
+    let htmlHari = `<div class="calendar-container">`;
+    htmlHari += `<div style="text-align:center; font-weight:800; margin-bottom:15px; color:#0f172a; font-size:16px;">${currentBulanLemburStr}</div>`;
+    htmlHari += `<div class="calendar-header"><div>Sn</div><div>Sl</div><div>Rb</div><div>Km</div><div>Jm</div><div>Sb</div><div>Mg</div></div><div class="calendar-grid">`;
+
+    groupedDataByDate = {}; for (let i = 0; i < firstDay; i++) { htmlHari += `<div class="cal-day empty"></div>`; } 
+    for (let day = 1; day <= daysInMonth; day++) {
+      const dateStr = `${curYear}-${String(curMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`; const records = currentMonthData.filter(r => r.tanggal_lembur === dateStr); groupedDataByDate[dateStr] = records;
+      htmlHari += `<div class="cal-day ${records.length > 0 ? 'has-data' : ''}" ${records.length > 0 ? `onclick="openModal('${dateStr}')"` : ''}><span class="cal-date-num">${day}</span><span class="cal-badge ${records.length > 0 ? 'red' : 'zero'}">${records.length} </span></div>`;
+    } htmlHari += `</div></div>`; boxHari.innerHTML = htmlHari;
+
+    if (currentMonthData.length === 0) { boxKaryawan.innerHTML = '<div style="text-align:center; color:#94a3b8; font-size:13px; font-weight:500; margin-top:20px;">Belum ada riwayat lembur disetujui bulan ini.</div>'; } 
+    else {
+      const groupKaryawan = {};
+      currentMonthData.forEach(r => {
+        const nama = r.nama || 'Unknown';
+        const dVal = parseFloat(r.durasi) || 0;
+        if(!groupKaryawan[nama]) groupKaryawan[nama] = { records: [], totalJam: 0, id: r.id_karyawan };
+        groupKaryawan[nama].records.push(r); groupKaryawan[nama].totalJam += dVal;
+      });
+
+      let htmlKaryawan = `<div class="form-group" style="margin-top: 5px;"><input type="text" id="searchInputKaryawan" placeholder="🔍 Cari ID atau Nama Karyawan..." onkeyup="filterKaryawan()"></div>`; let i_kar = 0;
+      for(const nama in groupKaryawan) {
+        const idKar = groupKaryawan[nama].id || '';
+        htmlKaryawan += `
+        <div class="acc-item search-item" data-nama="${nama.toLowerCase()}" data-id="${idKar.toString().toLowerCase()}">
+          <div class="acc-header" onclick="toggleAcc('accKar-${i_kar}')"><span>👤 ${nama} <span style="font-size:10px; color:var(--text-muted); font-weight:600;">#${idKar}</span></span><span class="acc-badge">${formatTeksJam(groupKaryawan[nama].totalJam)}</span></div>
+          <div class="acc-body" id="accKar-${i_kar}">`;
+        
+        groupKaryawan[nama].records.forEach(r => {
+          htmlKaryawan += `<div class="acc-row" style="flex-wrap:wrap; gap:5px;"><div style="flex:1;"><span style="font-weight:700; color:#334155;">📅 ${r.tanggal_lembur || '-'}</span> <strong style="color:var(--accent); font-size:10px; margin-left:5px; background:#fff1f2; padding:3px 6px; border-radius:6px;">${r.jam_awal} - ${r.jam_selesai}</strong></div><strong style="color:#0f172a; font-size:13px;">${formatTeksJam(r.durasi)}</strong></div>`;
+        }); htmlKaryawan += `</div></div>`; i_kar++;
+      } boxKaryawan.innerHTML = htmlKaryawan;
+    }
+  }
+
+  function validateKaryawanMaster(idVal, namaVal) { return master.find(k => k.id_karyawan == idVal && k.nama_karyawan == namaVal); }
+
+  document.getElementById('izinForm').addEventListener('submit', async (e) => {
+    e.preventDefault(); const id_izin = document.getElementById('izin_id').value; const nama_izin = document.getElementById('izin_nama').value;
+    if(!validateKaryawanMaster(id_izin, nama_izin)) { showCustomAlert("Pastikan ID dan Nama Karyawan dipilih dari daftar saran yang muncul!", "error"); return; }
+    
+    const kategori = document.getElementById('kategori').value; const tglMulai = document.getElementById('tgl_mulai').value; const tglAkhir = document.getElementById('tgl_akhir').value; const alasan = document.getElementById('alasan').value;
+    showCustomConfirm("Apakah Anda yakin ingin mengirim pengajuan izin ini ke Admin HRD?", async () => {
+      const btn = document.getElementById('btnSubmit'); btn.disabled = true; btn.innerText = 'Mengirim Data...';
+      const payload = { id_karyawan: id_izin, nama: nama_izin, tanggal_izin_mulai: tglMulai, tanggal_izin_akhir: tglAkhir, kategori_izin: kategori, alasan: alasan, status: 'PENDING' };
+      try {
+        const { error } = await db.from('data_izin').insert([payload]); if (error) throw error;
+        const waTanggal = (tglMulai === tglAkhir) ? tglMulai : `${tglMulai} s/d ${tglAkhir}`;
+        const waText = `Halo kak elok, aku mohon ${kategori} di ${waTanggal} karena ${alasan}, mohon untuk segera memberikan keputusan, terima kasih!`;
+        showCustomAlert('Berhasil! Anda akan dialihkan ke WhatsApp untuk memberitahu HRD.', "info"); setTimeout(() => { window.location.href = `https://wa.me/628155138385?text=${encodeURIComponent(waText)}`; }, 2000);
+      } catch (error) { showCustomAlert('Gagal terhubung ke server. Silakan coba lagi nanti.', "error"); btn.disabled = false; btn.innerText = 'Kirim Pengajuan'; }
     });
-  }
-
-  // Melacak pergerakan Mouse & Sentuhan layar HP
-  window.addEventListener('mousemove', (e) => {
-    mouseX = e.clientX; mouseY = e.clientY;
-    updateEyePosition();
-  });
-  window.addEventListener('touchmove', (e) => {
-    mouseX = e.touches[0].clientX; mouseY = e.touches[0].clientY;
-    updateEyePosition();
   });
 
-  // 2. SISTEM NGAMUK: Mukul Kursor Saat Ditahan
-  function triggerAttack(x, y) {
-    isAngry = true;
-    cat.classList.add('angry');
-    document.body.classList.add('shake');
+  document.getElementById('lemburForm').addEventListener('submit', async (e) => {
+    e.preventDefault(); const idInput = document.getElementById('lembur_id').value; const namaInput = document.getElementById('lembur_nama').value; const tglInput = document.getElementById('tgl_lembur').value;
+    if(!validateKaryawanMaster(idInput, namaInput)) { showCustomAlert("Pastikan ID dan Nama Karyawan dipilih dari daftar saran yang muncul!", "error"); return; }
+    
+    // --- VALIDASI TANGGAL MASA DEPAN (Pertahanan 2) ---
+    const inputDate = new Date(tglInput);
+    const today = new Date();
+    inputDate.setHours(0,0,0,0); today.setHours(0,0,0,0);
+    if(inputDate > today) {
+      showCustomAlert("Tidak bisa mengajukan lembur untuk hari esok atau tanggal di masa depan!", "error"); return;
+    }
 
-    // Kembalikan posisi pupil ke tengah (karena mata nyipit marah)
-    pupils.forEach(p => p.style.transform = `translate(0px, 0px)`);
-
-    // Kalkulasi jarak dan sudut tangan kucing untuk memukul kursor
-    const catRect = cat.getBoundingClientRect();
-    // Titik pangkal tangan (bahu kucing)
-    const startX = catRect.left + 100; 
-    const startY = catRect.top + 120;
-
-    const angle = Math.atan2(y - startY, x - startX) * 180 / Math.PI;
-    const distance = Math.hypot(x - startX, y - startY);
-
-    // Rentangkan tangan memukul tepat ke koordinat sasaran
-    paw.style.width = (distance - 20) + 'px'; // -20px biar ujung cakarnya pas di kursor
-    paw.style.transform = `rotate(${angle}deg)`;
-  }
-
-  function calmDown() {
-    isAngry = false;
-    cat.classList.remove('angry');
-    document.body.classList.remove('shake');
-    // Tarik kembali tangan kucing
-    paw.style.width = '0px';
-    updateEyePosition();
-  }
-
-  // Memicu amukan pas layar ditahan (Klik kiri / Sentuh HP)
-  window.addEventListener('mousedown', (e) => triggerAttack(e.clientX, e.clientY));
-  window.addEventListener('touchstart', (e) => triggerAttack(e.touches[0].clientX, e.touches[0].clientY));
-
-  // Menenangkan kucing saat dilepas
-  window.addEventListener('mouseup', calmDown);
-  window.addEventListener('touchend', calmDown);
+    const cekDuplikat = historyLemburData.find(h => h.id_karyawan == idInput && h.tanggal_lembur == tglInput);
+    if (cekDuplikat) { showCustomAlert(`Anda sudah melakukan input lembur pada tanggal ${tglInput}. Hubungi HRD jika ingin revisi.`, "error"); return; }
+    
+    showCustomConfirm("Pastikan durasi jam lembur sudah benar. Lanjutkan kirim data?", async () => {
+      const btn = document.getElementById('btnSubmitLembur'); btn.disabled = true; btn.innerText = 'Menyimpan Data...';
+      const jam_awal = document.getElementById('waktu_mulai').value; const jam_selesai = document.getElementById('waktu_selesai').value;
+      const [h1, m1] = jam_awal.split(':').map(Number); const [h2, m2] = jam_selesai.split(':').map(Number); let totalMins = (h2 * 60 + m2) - (h1 * 60 + m1); if(totalMins < 0) totalMins += 24 * 60; 
+      const durasiDec = (totalMins / 60).toFixed(2);
+      const dObj = new Date(tglInput); const mNames = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember']; const bulanStr = `${mNames[dObj.getMonth()]} ${dObj.getFullYear()}`;
+      
+      const payload = { id_karyawan: idInput, nama: namaInput, tanggal_lembur: tglInput, jam_awal: jam_awal, jam_selesai: jam_selesai, durasi: parseFloat(durasiDec), alasan: document.getElementById('alasan_lembur').value, bulan_lembur: bulanStr, status: 'PENDING' };
+      try {
+        const { error } = await db.from('data_lembur').insert([payload]); if (error) throw error;
+        showCustomAlert('Mantap! Data lembur berhasil dikirim dan menunggu persetujuan HRD.', "info"); setTimeout(() => { location.reload(); }, 2000);
+      } catch (error) { showCustomAlert('Gagal terhubung ke server. Silakan coba lagi nanti.', "error"); btn.disabled = false; btn.innerText = 'Kirim Data Lembur'; }
+    });
+  });
 </script>
 </body>
 </html>
