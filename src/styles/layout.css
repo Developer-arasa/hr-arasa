@@ -1,0 +1,151 @@
+/* ============================================================
+   LAYOUT — Struktur shell: navbar, sidebar, container, grid.
+   Ubah posisi/struktur cukup di file ini.
+   ============================================================ */
+
+.app-shell {
+  min-height: 100vh;
+  background: var(--bg-gradient);
+  background-attachment: fixed;
+  color: var(--text-dark);
+  font-family: var(--font-family);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Container utama desktop: navbar kiri + konten kanan */
+.app-container {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ===== Sidebar / Navbar (desktop) ===== */
+.app-navbar {
+  width: 250px;
+  flex-shrink: 0;
+  background: var(--surface-glass);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-right: 1px solid var(--border);
+  padding: var(--space-6) var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  box-sizing: border-box;
+}
+
+.navbar-brand {
+  text-align: center;
+  padding: var(--space-3) 0 var(--space-6);
+}
+
+.navbar-brand .brand-name {
+  font-size: var(--font-size-xl);
+  font-weight: 800;
+  color: var(--text-heading);
+  letter-spacing: -1.2px;
+  margin: 0;
+}
+
+.navbar-brand .brand-sub {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  font-weight: 500;
+  margin-top: var(--space-1);
+}
+
+.navbar-links {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.navbar-footer {
+  margin-top: auto;
+}
+
+/* ===== Konten utama ===== */
+.app-content {
+  flex: 1;
+  padding: var(--space-7);
+  box-sizing: border-box;
+  max-width: 960px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.page-header {
+  margin-bottom: var(--space-6);
+}
+
+.page-title {
+  font-size: var(--font-size-lg);
+  font-weight: 800;
+  color: var(--text-heading);
+  letter-spacing: -0.5px;
+  margin: 0;
+}
+
+.page-subtitle {
+  font-size: var(--font-size-sm);
+  color: var(--text-muted);
+  font-weight: 500;
+  margin: var(--space-1) 0 0;
+}
+
+.header-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}
+
+.meta-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  color: var(--text-heading);
+  background: var(--accent-soft);
+  border: 1px solid var(--accent-border);
+  border-radius: 999px;
+  padding: 6px 12px;
+  white-space: nowrap;
+}
+
+/* ===== Bottom Nav (mobile) ===== */
+.app-bottom-nav {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--surface-glass);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-top: 1px solid var(--border);
+  padding: var(--space-2) var(--space-3);
+  z-index: 1000;
+  box-sizing: border-box;
+}
+
+.app-bottom-nav .bottom-links {
+  display: flex;
+  justify-content: space-around;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .app-navbar {
+    display: none;
+  }
+  .app-bottom-nav {
+    display: block;
+  }
+  .app-content {
+    padding: var(--space-5) var(--space-4) 100px;
+  }
+}

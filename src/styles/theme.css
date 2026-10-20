@@ -1,0 +1,68 @@
+/* ============================================================
+   THEME — Semua token warna, font, spacing, radius, shadow.
+   Ubah warna total cukup di file ini.
+   ============================================================ */
+
+:root {
+  /* Warna brand (gradient merah crimson, khas Arasa) */
+  --accent: #dc2626;
+  --accent-2: #b91c1c;
+  --accent-soft: #fef2f2;
+  --accent-border: #fecaca;
+  --accent-glow: rgba(220, 38, 38, 0.3);
+
+  /* Warna netral */
+  --text-dark: #1e293b;
+  --text-heading: #0f172a;
+  --text-muted: #64748b;
+  --text-faint: #94a3b8;
+
+  /* Background & surface */
+  --bg-gradient: linear-gradient(140deg, #e0eafc 0%, #cfdef3 100%);
+  --surface: #ffffff;
+  --surface-glass: rgba(255, 255, 255, 0.7);
+  --surface-soft: #f8fafc;
+
+  /* Border */
+  --border: #e2e8f0;
+
+  /* Status colors */
+  --success-bg: #d1fae5;
+  --success-text: #065f46;
+  --warning-bg: #fef3c7;
+  --warning-text: #b45309;
+  --danger-bg: #fee2e2;
+  --danger-text: #991b1b;
+  --info-bg: #e0f2fe;
+  --info-text: #075985;
+
+  /* Radius */
+  --radius-sm: 12px;
+  --radius-md: 16px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+
+  /* Shadow */
+  --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 10px 40px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 15px 30px rgba(0, 0, 0, 0.08);
+
+  /* Font */
+  --font-family: 'Poppins', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-size-xs: 11px;
+  --font-size-sm: 13px;
+  --font-size-base: 14px;
+  --font-size-md: 16px;
+  --font-size-lg: 20px;
+  --font-size-xl: 32px;
+
+  /* Spacing */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 32px;
+  --space-8: 40px;
+}

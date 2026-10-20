@@ -1,0 +1,31 @@
+/* ============================================================
+   ENTRY CSS — Import font + semua stylesheet.
+   Warna/tema: styles/theme.css
+   Struktur: styles/layout.css
+   UI: styles/components.css
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+
+@import './styles/theme.css';
+@import './styles/layout.css';
+@import './styles/components.css';
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-family);
+}
+
+#root {
+  min-height: 100vh;
+}
+
