@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
 import { supabase } from '../lib/supabase';
 import Modal from '../components/Modal';
+import { IconCog, IconFolder, IconPen, IconLock, IconDoor } from '../components/Icons';
 import { z } from 'zod';
 
 const bukuIndukSchema = z.object({
@@ -93,12 +94,12 @@ export default function Profil() {
     setSavingBuku(false);
 
     if (error) {
-      setModal({ type: 'alert', icon: '❌', title: 'Gagal Menyimpan', msg: 'Gagal terhubung ke server. Silakan coba lagi nanti.' });
+      setModal({ type: 'alert', icon: 'error', title: 'Gagal Menyimpan', msg: 'Gagal terhubung ke server. Silakan coba lagi nanti.' });
       return;
     }
 
     await refreshUser();
-    setModal({ type: 'alert', icon: '✅', title: 'Berhasil', msg: 'Data buku induk berhasil diperbarui.' });
+    setModal({ type: 'alert', icon: 'success', title: 'Berhasil', msg: 'Data buku induk berhasil diperbarui.' });
   }
 
   async function savePin(e) {
@@ -126,7 +127,7 @@ export default function Profil() {
 
     if (checkErr) {
       setSavingPin(false);
-      setModal({ type: 'alert', icon: '❌', title: 'Gagal', msg: 'Gagal terhubung ke server. Silakan coba lagi nanti.' });
+      setModal({ type: 'alert', icon: 'error', title: 'Gagal', msg: 'Gagal terhubung ke server. Silakan coba lagi nanti.' });
       return;
     }
 
@@ -144,18 +145,18 @@ export default function Profil() {
     setSavingPin(false);
 
     if (error) {
-      setModal({ type: 'alert', icon: '❌', title: 'Gagal', msg: 'Gagal terhubung ke server. Silakan coba lagi nanti.' });
+      setModal({ type: 'alert', icon: 'error', title: 'Gagal', msg: 'Gagal terhubung ke server. Silakan coba lagi nanti.' });
       return;
     }
 
     setPin({ pin_lama: '', pin_baru: '', pin_konfirmasi: '' });
-    setModal({ type: 'alert', icon: '✅', title: 'Berhasil', msg: 'PIN berhasil diganti.' });
+    setModal({ type: 'alert', icon: 'success', title: 'Berhasil', msg: 'PIN berhasil diganti.' });
   }
 
   function handleLogout() {
     setModal({
       type: 'confirm',
-      icon: '🚪',
+      icon: 'door',
       title: 'Keluar dari akun?',
       msg: 'Sesi login kamu akan dihapus dari perangkat ini.',
     });
@@ -175,7 +176,7 @@ export default function Profil() {
           <p className="page-subtitle">Lihat identitas kamu & kelola pengaturan akun.</p>
         </div>
         <button className="btn btn-ghost" onClick={() => setSettingsOpen(true)}>
-          ⚙️ Settings
+          <IconCog /> Settings
         </button>
       </div>
 
@@ -206,7 +207,7 @@ export default function Profil() {
       {/* ===== Info Detail ===== */}
       <div className="card">
         <div className="card-head">
-          <div className="card-head__icon">🗂️</div>
+          <div className="card-head__icon"><IconFolder /></div>
           <div>
             <h2 className="card-head__title">Informasi Karyawan</h2>
             <p className="card-head__desc">Detail data pribadi kamu</p>
@@ -245,15 +246,15 @@ export default function Profil() {
       <Modal
         open={settingsOpen}
         title="Pengaturan"
-        icon="⚙️"
+        icon="warn"
         onClose={() => setSettingsOpen(false)}
       >
         <div className="tab-nav">
           <button className={`tab-btn${settingsTab === 'data' ? ' active' : ''}`} onClick={() => setSettingsTab('data')}>
-            📝 Perbarui Data
+            <IconPen /> Perbarui Data
           </button>
           <button className={`tab-btn${settingsTab === 'pin' ? ' active' : ''}`} onClick={() => setSettingsTab('pin')}>
-            🔒 Ganti PIN
+            <IconLock /> Ganti PIN
           </button>
         </div>
 
@@ -404,7 +405,7 @@ export default function Profil() {
         )}
 
         <div className="settings-footer">
-          <button className="btn-danger" onClick={handleLogout}>🚪 Keluar / Log Out</button>
+          <button className="btn-danger" onClick={handleLogout}><IconDoor /> Keluar / Log Out</button>
         </div>
       </Modal>
 

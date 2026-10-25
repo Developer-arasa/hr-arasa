@@ -1,27 +1,29 @@
 import { NavLink } from 'react-router-dom';
+import { IconHome, IconDoc, IconClock, IconUser } from '../Icons';
 
 const NAV_ITEMS = [
-  { to: '/dashboard', label: 'Dashboard', icon: '🏠' },
-  { to: '/izin', label: 'Izin', icon: '📄' },
-  { to: '/lembur', label: 'Lembur', icon: '⏱️' },
-  { to: '/profil', label: 'Profil', icon: '👤' },
+  { to: '/dashboard', label: 'Home', icon: IconHome },
+  { to: '/izin', label: 'Izin', icon: IconDoc },
+  { to: '/lembur', label: 'Lembur', icon: IconClock },
+  { to: '/profil', label: 'Profil', icon: IconUser },
 ];
 
 export default function BottomNav() {
   return (
     <nav className="app-bottom-nav">
       <div className="bottom-links">
-        {NAV_ITEMS.map((item) => (
+        {NAV_ITEMS.map(({ to, label, icon: Icon }) => (
           <NavLink
-            key={item.to}
-            to={item.to}
-            className={({ isActive }) => `nav-link nav-link--bottom${isActive ? ' active' : ''}`}
+            key={to}
+            to={to}
+            className={({ isActive }) => `bottom-link${isActive ? ' active' : ''}`}
           >
-            <span className="nav-icon">{item.icon}</span>
-            {item.label}
+            <Icon />
+            {label}
           </NavLink>
         ))}
       </div>
     </nav>
   );
 }
+

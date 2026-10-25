@@ -1,62 +1,68 @@
 /* ============================================================
-   THEME — Semua token warna, font, spacing, radius, shadow.
-   Ubah warna total cukup di file ini.
+   THEME — Design tokens: warna, font, spacing, radius, shadow.
+   Palet: broken white + deep crimson red (Apple-inspired).
    ============================================================ */
 
 :root {
-  /* Warna brand (gradient merah crimson, khas Arasa) */
-  --accent: #dc2626;
-  --accent-2: #b91c1c;
-  --accent-soft: #fef2f2;
-  --accent-border: #fecaca;
-  --accent-glow: rgba(220, 38, 38, 0.3);
+  /* ===== Warna brand — Deep Crimson Red ===== */
+  --accent: #c1121f;
+  --accent-2: #9d0f19;
+  --accent-3: #7a0c14;
+  --accent-soft: #fbe9ea;
+  --accent-border: #f4c9cc;
+  --accent-glow: rgba(193, 18, 31, 0.18);
 
-  /* Warna netral */
-  --text-dark: #1e293b;
-  --text-heading: #0f172a;
-  --text-muted: #64748b;
-  --text-faint: #94a3b8;
-
-  /* Background & surface */
-  --bg-gradient: linear-gradient(140deg, #e0eafc 0%, #cfdef3 100%);
+  /* ===== Netral (broken white base) ===== */
+  --bg: #faf9f7;
+  --bg-soft: #f4f2ee;
   --surface: #ffffff;
-  --surface-glass: rgba(255, 255, 255, 0.7);
-  --surface-soft: #f8fafc;
+  --surface-glass: rgba(255, 255, 255, 0.72);
+  --surface-glass-strong: rgba(255, 255, 255, 0.86);
+  --surface-soft: #f6f5f2;
 
-  /* Border */
-  --border: #e2e8f0;
+  --text-heading: #161412;
+  --text-dark: #2b2825;
+  --text-muted: #6f6a64;
+  --text-faint: #a29c94;
 
-  /* Status colors */
-  --success-bg: #d1fae5;
-  --success-text: #065f46;
-  --warning-bg: #fef3c7;
-  --warning-text: #b45309;
-  --danger-bg: #fee2e2;
-  --danger-text: #991b1b;
-  --info-bg: #e0f2fe;
-  --info-text: #075985;
+  /* ===== Border ===== */
+  --border: #eae6df;
+  --border-strong: #ddd7cd;
 
-  /* Radius */
+  /* ===== Status ===== */
+  --success-bg: #e7f4ec;
+  --success-text: #1d6b43;
+  --warning-bg: #fdf3df;
+  --warning-text: #a16207;
+  --danger-bg: #fce9ea;
+  --danger-text: #9d0f19;
+  --info-bg: #e9effa;
+  --info-text: #2b4b8f;
+
+  /* ===== Radius (Apple-like) ===== */
   --radius-sm: 12px;
-  --radius-md: 16px;
-  --radius-lg: 20px;
-  --radius-xl: 28px;
+  --radius-md: 18px;
+  --radius-lg: 24px;
+  --radius-xl: 32px;
+  --radius-2xl: 40px;
 
-  /* Shadow */
-  --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.04);
-  --shadow-md: 0 10px 40px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 15px 30px rgba(0, 0, 0, 0.08);
+  /* ===== Shadow ===== */
+  --shadow-sm: 0 1px 2px rgba(22, 20, 18, 0.03), 0 2px 8px rgba(22, 20, 18, 0.04);
+  --shadow-md: 0 8px 24px rgba(22, 20, 18, 0.06), 0 2px 6px rgba(22, 20, 18, 0.04);
+  --shadow-lg: 0 24px 60px rgba(22, 20, 18, 0.10), 0 8px 20px rgba(22, 20, 18, 0.05);
 
-  /* Font */
-  --font-family: 'Poppins', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  /* ===== Font — Inter (single family) ===== */
+  --font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --font-size-xs: 11px;
   --font-size-sm: 13px;
   --font-size-base: 14px;
   --font-size-md: 16px;
   --font-size-lg: 20px;
   --font-size-xl: 32px;
+  --font-size-2xl: 44px;
+  --font-size-3xl: 56px;
 
-  /* Spacing */
+  /* ===== Spacing ===== */
   --space-1: 4px;
   --space-2: 8px;
   --space-3: 12px;
@@ -65,4 +71,13 @@
   --space-6: 24px;
   --space-7: 32px;
   --space-8: 40px;
+  --space-9: 48px;
+  --space-10: 64px;
+
+  /* ===== Motion (morph, ease-in-out) ===== */
+  --ease-morph: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-smooth: cubic-bezier(0.45, 0, 0.15, 1);
+  --dur-fast: 160ms;
+  --dur-base: 300ms;
+  --dur-slow: 500ms;
 }

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { supabase } from '../lib/supabase';
+import { IconError } from './Icons';
 
 /**
  * Autocomplete ketat: input ID/Nama karyawan dengan saran dari master_data.
@@ -84,7 +85,7 @@ export default function KaryawanAutocomplete({ mode, value, onChange, onSelect, 
         <div className="autocomplete-list" style={{ display: 'block' }}>
           {suggestions.length === 0 ? (
             <div className="autocomplete-item" style={{ color: '#ef4444', fontWeight: 600, cursor: 'default' }}>
-              ❌ Tidak ditemukan di master data
+              <IconError /> Tidak ditemukan di master data
             </div>
           ) : (
             suggestions.map((k) => (

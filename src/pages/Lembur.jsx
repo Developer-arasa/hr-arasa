@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { useAuthStore } from '../store/authStore';
 import { supabase } from '../lib/supabase';
 import Modal from '../components/Modal';
+import Loading from '../components/Loading';
+import { IconClock, IconChart, IconList, IconCal, IconInbox } from '../components/Icons';
 import { z } from 'zod';
 
 const NAMA_BULAN = [
@@ -66,7 +68,7 @@ export default function Lembur() {
     return () => { cancelled = true; };
   }, [user?.id_karyawan]);
 
-  function showAlert(msg, icon = '🔔') {
+  function showAlert(msg, icon = 'bell') {
     setModal({ type: 'alert', msg, icon });
   }
   function closeModal() {
@@ -91,20 +93,20 @@ export default function Lembur() {
     inputDate.setHours(0, 0, 0, 0);
     today.setHours(0, 0, 0, 0);
     if (inputDate > today) {
-      showAlert('Tidak bisa mengajukan lembur untuk hari esok atau tanggal di masa depan!', '❌');
+      showAlert('Tidak bisa mengajukan lembur untuk hari esok atau tanggal di masa depan!', 'error');
       return;
     }
 
     // Validasi duplikat
     const cekDuplikat = historyLembur.find((h) => h.id_karyawan == user.id_karyawan && h.tanggal_lembur == tgl);
     if (cekDuplikat) {
-      showAlert(`Anda sudah melakukan input lembur pada tanggal ${tgl}. Hubungi HRD jika ingin revisi.`, '❌');
+      showAlert(`Anda sudah melakukan input lembur pada tanggal ${tgl}. Hubungi HRD jika ingin revisi.`, 'error');
       return;
     }
 
     setModal({
       type: 'confirm',
-      icon: '❓',
+      icon: 'question',
       title: 'Konfirmasi',
       msg: 'Pastikan durasi jam lembur sudah benar. Lanjutkan kirim data?',
     });
@@ -138,10 +140,10 @@ export default function Lembur() {
     try {
       const { error } = await supabase.from('data_lembur').insert([payload]);
       if (error) throw error;
-      setModal({ type: 'alert', icon: '✅', msg: 'Mantap! Data lembur berhasil dikirim dan menunggu persetujuan HRD.' });
+      setModal({ type: 'alert', icon: 'success', msg: 'Mantap! Data lembur berhasil dikirim dan menunggu persetujuan HRD.' });
       setTimeout(() => { window.location.reload(); }, 2000);
     } catch {
-      setModal({ type: 'alert', icon: '❌', msg: 'Gagal terhubung ke server. Silakan coba lagi nanti.' });
+      setModal({ type: 'alert', icon: 'error', msg: 'Gagal terhubung ke server. Silakan coba lagi nanti.' });
     } finally {
       setSubmitting(false);
     }
@@ -157,10 +159,10 @@ export default function Lembur() {
       <div className="card">
         <div className="tab-nav">
           <button className={`tab-btn${tab === 'pengajuan' ? ' active' : ''}`} onClick={() => setTab('pengajuan')}>
-            ⏱️ Pengajuan
+            <IconClock /> Pengajuan
           </button>
           <button className={`tab-btn${tab === 'riwayat' ? ' active' : ''}`} onClick={() => setTab('riwayat')}>
-            📊 Riwayat
+            <IconChart /> Riwayat
           </button>
         </div>
 
@@ -238,8 +240,8 @@ export default function Lembur() {
         <div>
           <div className="riwayat-toolbar">
             <div className="tab-nav">
-              <button className={`tab-btn${viewMode === 'list' ? ' active' : ''}`} onClick={() => setViewMode('list')}>📋 List</button>
-              <button className={`tab-btn${viewMode === 'grid' ? ' active' : ''}`} onClick={() => setViewMode('grid')}>📅 Grid</button>
+              <button className={`tab-btn${viewMode === 'list' ? ' active' : ''}`} onClick={() => setViewMode('list')}><IconList /> List</button>
+              <button className={`tab-btn${viewMode === 'grid' ? ' active' : ''}`} onClick={() => setViewMode('grid')}><IconCal /> Grid</button>
             </div>
 
             {viewMode === 'list' && (
@@ -357,7 +359,7 @@ export default function Lembur() {
     if (data.length === 0) {
       return (
         <div className="empty-state">
-          <span className="empty-state__icon">📭</span>
+          <span className="empty-state__icon"><IconInbox /></span>
           Belum ada riwayat lembur.
         </div>
       );
@@ -368,7 +370,7 @@ export default function Lembur() {
         {data.map((r) => (
           <div className="timeline-card" key={r.id}>
             <div className="timeline-head">
-              <div className="timeline-title">📅 {r.tanggal_lembur}</div>
+              <div className="timeline-title"><IconCal /> {r.tanggal_lembur}</div>
               <span className={`badge badge--${(r.status || 'pending').toLowerCase()}`}>
                 {r.status || 'PENDING'}
               </span>

@@ -3,6 +3,10 @@ import { useAuthStore } from '../store/authStore';
 import { supabase } from '../lib/supabase';
 import Modal from '../components/Modal';
 import Loading from '../components/Loading';
+import {
+  IconPen, IconFolder, IconIllness,
+  IconWarn, IconCal, IconInbox, IconUser,
+} from '../components/Icons';
 import { z } from 'zod';
 
 const izinSchema = z.object({
@@ -44,7 +48,7 @@ export default function Izin() {
     return () => { cancelled = true; };
   }, [user.id_karyawan]);
 
-  function showAlert(msg, icon = '🔔') {
+  function showAlert(msg, icon = 'bell') {
     setModal({ type: 'alert', msg, icon });
   }
   function closeModal() {
@@ -76,13 +80,13 @@ export default function Izin() {
     });
 
     if (hasOverlap) {
-      showAlert('Anda sudah memiliki pengajuan izin pada rentang tanggal tersebut. Hubungi HRD jika ingin mengubah/membatalkan data.', '❌');
+      showAlert('Anda sudah memiliki pengajuan izin pada rentang tanggal tersebut. Hubungi HRD jika ingin mengubah/membatalkan data.', 'error');
       return;
     }
 
     setModal({
       type: 'confirm',
-      icon: '❓',
+      icon: 'question',
       title: 'Konfirmasi Pengajuan',
       msg: 'Apakah Anda yakin ingin mengirim pengajuan izin ini ke Admin HRD?',
     });
@@ -109,12 +113,12 @@ export default function Izin() {
       const waTanggal = tglMulai === tglAkhir ? tglMulai : `${tglMulai} s/d ${tglAkhir}`;
       const waText = `Halo kak elok, aku mohon ${kategori} di ${waTanggal} karena ${alasan}, mohon untuk segera memberikan keputusan, terima kasih!`;
 
-      setModal({ type: 'alert', icon: '✅', msg: 'Berhasil! Anda akan dialihkan ke WhatsApp untuk memberitahu HRD.' });
+      setModal({ type: 'alert', icon: 'success', msg: 'Berhasil! Anda akan dialihkan ke WhatsApp untuk memberitahu HRD.' });
       setTimeout(() => {
         window.location.href = `https://wa.me/${import.meta.env.VITE_WA_HRD}?text=${encodeURIComponent(waText)}`;
       }, 2000);
     } catch {
-      setModal({ type: 'alert', icon: '❌', msg: 'Gagal terhubung ke server. Silakan coba lagi nanti.' });
+      setModal({ type: 'alert', icon: 'error', msg: 'Gagal terhubung ke server. Silakan coba lagi nanti.' });
     } finally {
       setSubmitting(false);
     }
@@ -138,10 +142,10 @@ export default function Izin() {
       <div className="card">
         <div className="tab-nav">
           <button className={`tab-btn${tab === 'pengajuan' ? ' active' : ''}`} onClick={() => setTab('pengajuan')}>
-            📝 Pengajuan
+            <IconPen /> Pengajuan
           </button>
           <button className={`tab-btn${tab === 'riwayat' ? ' active' : ''}`} onClick={() => setTab('riwayat')}>
-            🗂️ Riwayat
+            <IconFolder /> Riwayat
           </button>
         </div>
 
@@ -162,16 +166,16 @@ export default function Izin() {
             <label className="form-label">Kategori Izin</label>
             <div className="pill-group">
               {[
-                { val: 'Sakit', icon: '🤒', label: 'Sakit' },
-                { val: 'Izin', icon: '📝', label: 'Izin' },
-                { val: 'Abnormal case', icon: '⚠️', label: 'Abnormal case' },
+                { val: 'Sakit', icon: IconIllness, label: 'Sakit' },
+                { val: 'Izin', icon: IconPen, label: 'Izin' },
+                { val: 'Abnormal case', icon: IconWarn, label: 'Abnormal case' },
               ].map((opt) => (
                 <div
                   key={opt.val}
                   className={`pill-option${kategori === opt.val ? ' active' : ''}`}
                   onClick={() => { setKategori(opt.val); setErrors((e) => ({ ...e, kategori: '' })); }}
                 >
-                  <span className="pill-option__icon">{opt.icon}</span>
+                  <span className="pill-option__icon"><opt.icon /></span>
                   {opt.label}
                 </div>
               ))}
@@ -206,7 +210,7 @@ export default function Izin() {
 
           {tglMulai && tglAkhir && tglAkhir >= tglMulai && (
             <div className="day-count">
-              <span className="day-count__icon">📆</span>
+              <span className="day-count__icon"><IconCal /></span>
               {dayCount} {dayCount === 1 ? 'Hari' : 'Hari'} izin
             </div>
           )}
@@ -236,7 +240,7 @@ export default function Izin() {
           <Loading lines={4} />
         ) : history.length === 0 ? (
           <div className="empty-state">
-            <span className="empty-state__icon">📭</span>
+            <span className="empty-state__icon"><IconInbox /></span>
             Belum ada riwayat izin tersimpan.
           </div>
         ) : (
@@ -265,8 +269,8 @@ export default function Izin() {
                     <span className={`badge badge--${statusClass}`}>{status}</span>
                   </div>
                   <div className="timeline-meta">
-                    <span>👤 {h.nama || '-'} <span style={{ opacity: 0.6 }}>(#{h.id_karyawan || '-'})</span></span>
-                    <span>📅 {h.tanggal_izin_mulai || '-'} s/d {h.tanggal_izin_akhir || '-'}</span>
+                    <span><IconUser /> {h.nama || '-'} <span style={{ opacity: 0.6 }}>(#{h.id_karyawan || '-'})</span></span>
+                    <span><IconCal /> {h.tanggal_izin_mulai || '-'} s/d {h.tanggal_izin_akhir || '-'}</span>
                   </div>
                   {h.alasan && <div className="timeline-row__sub" style={{ marginTop: '8px' }}>{h.alasan}</div>}
                 </div>

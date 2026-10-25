@@ -4,6 +4,19 @@
 CREATE TABLE public.master_data (
   id_karyawan character varying NOT NULL,
   nama_karyawan character varying NOT NULL,
+  pin character varying DEFAULT '123456'::character varying,
+  role character varying DEFAULT 'karyawan'::character varying,
+  nik_ktp character varying,
+  jabatan character varying,
+  departemen character varying,
+  tgl_gabung date,
+  tempat_lahir character varying,
+  tgl_lahir date,
+  no_hp character varying,
+  alamat_domisili text,
+  status_nikah character varying,
+  kontak_darurat character varying,
+  jatah_cuti integer DEFAULT 12,
   CONSTRAINT master_data_pkey PRIMARY KEY (id_karyawan)
 );
 CREATE TABLE public.data_izin (
@@ -31,4 +44,13 @@ CREATE TABLE public.data_lembur (
   bulan_lembur character varying NOT NULL,
   status character varying DEFAULT 'PENDING'::character varying,
   CONSTRAINT data_lembur_pkey PRIMARY KEY (id)
+);
+CREATE TABLE public.data_pengumuman (
+  id integer NOT NULL DEFAULT nextval('data_pengumuman_id_seq'::regclass),
+  judul character varying NOT NULL,
+  isi_pesan text,
+  tanggal date DEFAULT CURRENT_DATE,
+  label_kategori character varying DEFAULT 'Info'::character varying,
+  created_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT data_pengumuman_pkey PRIMARY KEY (id)
 );
