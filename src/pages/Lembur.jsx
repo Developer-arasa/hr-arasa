@@ -97,8 +97,12 @@ export default function Lembur() {
       return;
     }
 
-    // Validasi duplikat
-    const cekDuplikat = historyLembur.find((h) => h.id_karyawan == user.id_karyawan && h.tanggal_lembur == tgl);
+    // Hanya blokir jika ada input dengan status aktif (PENDING/DISETUJUI).
+    // Input yang DITOLAK boleh diajukan lagi.
+    const STATUS_AKTIF = ['PENDING', 'DISETUJUI'];
+    const cekDuplikat = historyLembur.find(
+      (h) => h.id_karyawan == user.id_karyawan && h.tanggal_lembur == tgl && STATUS_AKTIF.includes((h.status || 'PENDING').toUpperCase()),
+    );
     if (cekDuplikat) {
       showAlert(`Anda sudah melakukan input lembur pada tanggal ${tgl}. Hubungi HRD jika ingin revisi.`, 'error');
       return;
@@ -138,6 +142,17 @@ export default function Lembur() {
     };
 
     try {
+      const { data: existing } = await supabase
+        .from('data_lembur')
+        .select('id')
+        .eq('id_karyawan', user.id_karyawan)
+        .eq('tanggal_lembur', tgl)
+        .in('status', ['PENDING', 'DISETUJUI']);
+      if (existing && existing.length > 0) {
+        setModal({ type: 'alert', icon: 'error', msg: `Data lembur pada tanggal ${tgl} sudah ada. Silakan muat ulang halaman.` });
+        return;
+      }
+
       const { error } = await supabase.from('data_lembur').insert([payload]);
       if (error) throw error;
       setModal({ type: 'alert', icon: 'success', msg: 'Mantap! Data lembur berhasil dikirim dan menunggu persetujuan HRD.' });

@@ -72,8 +72,11 @@ export default function Izin() {
       return;
     }
 
-    const riwayat = history.filter((h) => h.id_karyawan == user.id_karyawan);
-    const hasOverlap = riwayat.some((h) => {
+    const STATUS_AKTIF = ['PENDING', 'DISETUJUI', 'IZIN_DIBERIKAN'];
+    const riwayatAktif = history.filter(
+      (h) => h.id_karyawan == user.id_karyawan && STATUS_AKTIF.includes((h.status || 'PENDING').toUpperCase()),
+    );
+    const hasOverlap = riwayatAktif.some((h) => {
       const extMulai = h.tanggal_izin_mulai;
       const extAkhir = h.tanggal_izin_akhir || h.tanggal_izin_mulai;
       return (tglMulai <= extAkhir) && (tglAkhir >= extMulai);
@@ -107,6 +110,21 @@ export default function Izin() {
     };
 
     try {
+      const { data: existing } = await supabase
+        .from('data_izin')
+        .select('tanggal_izin_mulai, tanggal_izin_akhir')
+        .eq('id_karyawan', user.id_karyawan)
+        .in('status', ['PENDING', 'DISETUJUI', 'IZIN_DIBERIKAN']);
+      const overlapLagi = (existing || []).some((h) => {
+        const extMulai = h.tanggal_izin_mulai;
+        const extAkhir = h.tanggal_izin_akhir || h.tanggal_izin_mulai;
+        return (tglMulai <= extAkhir) && (tglAkhir >= extMulai);
+      });
+      if (overlapLagi) {
+        setModal({ type: 'alert', icon: 'error', msg: 'Pengajuan izin pada rentang tanggal tersebut sudah ada. Silakan muat ulang halaman.' });
+        return;
+      }
+
       const { error } = await supabase.from('data_izin').insert([payload]);
       if (error) throw error;
 
