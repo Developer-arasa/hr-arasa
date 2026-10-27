@@ -6,7 +6,6 @@ CREATE TABLE public.master_data (
   nama_karyawan character varying NOT NULL,
   pin character varying DEFAULT '123456'::character varying,
   role character varying DEFAULT 'karyawan'::character varying,
-  nik_ktp character varying,
   jabatan character varying,
   departemen character varying,
   tgl_gabung date,

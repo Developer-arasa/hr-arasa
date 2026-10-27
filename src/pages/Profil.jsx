@@ -28,6 +28,10 @@ const pinSchema = z
   .refine((d) => d.pin_baru !== d.pin_lama, {
     message: 'PIN baru tidak boleh sama dengan PIN lama',
     path: ['pin_baru'],
+  })
+  .refine((d) => d.pin_baru !== '123456', {
+    message: 'PIN baru tidak boleh memakai PIN bawaan (123456)',
+    path: ['pin_baru'],
   });
 
 export default function Profil() {

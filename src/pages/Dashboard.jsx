@@ -129,12 +129,6 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {user?.pin === '123456' && (
-        <div className="alert alert--error">
-          PIN kamu masih default (123456). Segera ubah lewat menu <strong>Profil</strong>.
-        </div>
-      )}
-
       <div className="stat-grid">
         <div className="stat-card stat-card--accent">
           <div className="stat-icon"><IconTrend /></div>

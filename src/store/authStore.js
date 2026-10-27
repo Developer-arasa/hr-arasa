@@ -2,6 +2,26 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { supabase } from '../lib/supabase';
 
+/**
+ * Menentukan apakah akun karyawan masih "terkunci" dan wajib
+ * melengkapi biodata + mengganti PIN sebelum akses fitur lain.
+ * Terkunci jika: PIN masih default '123456' ATAU ada field
+ * biodata editable yang kosong/null.
+ */
+export function isIncomplete(user) {
+  if (!user) return false;
+  if (user.pin === '123456') return true;
+  const required = [
+    'tempat_lahir',
+    'tgl_lahir',
+    'no_hp',
+    'alamat_domisili',
+    'status_nikah',
+    'kontak_darurat',
+  ];
+  return required.some((k) => !user[k] || String(user[k]).trim() === '');
+}
+
 export const useAuthStore = create(
   persist(
     (set, get) => ({
@@ -50,6 +70,24 @@ export const useAuthStore = create(
           .eq('id_karyawan', current.id_karyawan)
           .maybeSingle();
         if (data) set({ user: data });
+      },
+
+      /**
+       * Selesaikan pendaftaran wajib: update biodata + PIN baru
+       * dalam satu transaksi untuk karyawan yang terkunci.
+       */
+      completeSetup: async (payload) => {
+        const current = get().user;
+        if (!current) return { ok: false, message: 'Sesi berakhir. Silakan login ulang.' };
+        const { error } = await supabase
+          .from('master_data')
+          .update(payload)
+          .eq('id_karyawan', current.id_karyawan);
+        if (error) {
+          return { ok: false, message: 'Gagal terhubung ke server. Coba lagi nanti.' };
+        }
+        await get().refreshUser();
+        return { ok: true };
       },
 
       logout: () => set({ user: null }),
