@@ -1,0 +1,27 @@
+name: Rekap Lembur Harian
+
+on:
+  schedule:
+    # Setiap hari jam 10:00 WIB (03:00 UTC)
+    - cron: '0 3 * * *'
+  workflow_dispatch: {} # bisa di-trigger manual dari tab Actions
+
+jobs:
+  rekap-lembur:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Jalankan rekap lembur
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+          FONNTE_TOKEN: ${{ secrets.FONNTE_TOKEN }}
+          FONNTE_TARGET: ${{ secrets.FONNTE_TARGET }}
+        run: node scripts/rekap-lembur.mjs

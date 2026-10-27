@@ -46,6 +46,7 @@ export default function Lembur() {
   const [submitting, setSubmitting] = useState(false);
   const [modal, setModal] = useState(null);
   const [modalLembur, setModalLembur] = useState(null); // { dateStr, records }
+  const [editId, setEditId] = useState(null); // id baris yang akan di-update (mode edit jam lembur)
 
   const todayMax = (() => {
     const today = new Date();
@@ -97,17 +98,38 @@ export default function Lembur() {
       return;
     }
 
-    // Hanya blokir jika ada input dengan status aktif (PENDING/DISETUJUI).
-    // Input yang DITOLAK boleh diajukan lagi.
-    const STATUS_AKTIF = ['PENDING', 'DISETUJUI'];
-    const cekDuplikat = historyLembur.find(
-      (h) => h.id_karyawan == user.id_karyawan && h.tanggal_lembur == tgl && STATUS_AKTIF.includes((h.status || 'PENDING').toUpperCase()),
+    // ===== Aturan: 1 karyawan = 1 tanggal = 1 pengajuan =====
+    const riwayatTanggal = historyLembur.filter(
+      (h) => h.id_karyawan == user.id_karyawan && h.tanggal_lembur == tgl,
     );
-    if (cekDuplikat) {
-      showAlert(`Anda sudah melakukan input lembur pada tanggal ${tgl}. Hubungi HRD jika ingin revisi.`, 'error');
+
+    // 1. Sudah ada yang DISETUJUI (ACC) -> tidak bisa apa-apa.
+    const sudahAcc = riwayatTanggal.find(
+      (h) => ['DISETUJUI', 'IZIN_DIBERIKAN'].includes((h.status || '').toUpperCase()),
+    );
+    if (sudahAcc) {
+      showAlert('Lemburmu pada tanggal tersebut sudah di-ACC. Jika ada perubahan, silakan hubungi HRD.', 'error');
       return;
     }
 
+    // 2. Ada yang masih PENDING -> edit jam lembur (update baris yang sama).
+    const pending = riwayatTanggal.find(
+      (h) => (h.status || 'PENDING').toUpperCase() === 'PENDING',
+    );
+
+    if (pending) {
+      setEditId(pending.id);
+      setModal({
+        type: 'confirm',
+        icon: 'question',
+        title: 'Edit Jam Lembur',
+        msg: 'Sudah ada pengajuan lembur di tanggal ini (belum disetujui). Lanjutkan untuk memperbarui jam lembur?',
+      });
+      return;
+    }
+
+    // 3. Belum ada pengajuan di tanggal ini -> input baru.
+    setEditId(null);
     setModal({
       type: 'confirm',
       icon: 'question',
@@ -130,9 +152,6 @@ export default function Lembur() {
     const bulanStr = `${NAMA_BULAN[dObj.getMonth()]} ${dObj.getFullYear()}`;
 
     const payload = {
-      id_karyawan: user.id_karyawan,
-      nama: user.nama_karyawan,
-      tanggal_lembur: tgl,
       jam_awal: jamAwal,
       jam_selesai: jamSelesai,
       durasi: durasiDec,
@@ -142,20 +161,37 @@ export default function Lembur() {
     };
 
     try {
-      const { data: existing } = await supabase
-        .from('data_lembur')
-        .select('id')
-        .eq('id_karyawan', user.id_karyawan)
-        .eq('tanggal_lembur', tgl)
-        .in('status', ['PENDING', 'DISETUJUI']);
-      if (existing && existing.length > 0) {
-        setModal({ type: 'alert', icon: 'error', msg: `Data lembur pada tanggal ${tgl} sudah ada. Silakan muat ulang halaman.` });
-        return;
-      }
+      if (editId) {
+        // Mode edit: perbarui baris yang sudah ada (belum disetujui).
+        const { error } = await supabase
+          .from('data_lembur')
+          .update(payload)
+          .eq('id', editId)
+          .eq('id_karyawan', user.id_karyawan);
+        if (error) throw error;
+        setModal({ type: 'alert', icon: 'success', msg: 'Jam lembur berhasil diperbarui dan menunggu persetujuan HRD.' });
+      } else {
+        // Mode baru: cek ulang lalu insert.
+        const { data: existing } = await supabase
+          .from('data_lembur')
+          .select('id, status')
+          .eq('id_karyawan', user.id_karyawan)
+          .eq('tanggal_lembur', tgl);
 
-      const { error } = await supabase.from('data_lembur').insert([payload]);
-      if (error) throw error;
-      setModal({ type: 'alert', icon: 'success', msg: 'Mantap! Data lembur berhasil dikirim dan menunggu persetujuan HRD.' });
+        const sudahAda = (existing || []).find(
+          (h) => (h.status || 'PENDING').toUpperCase() !== 'DITOLAK',
+        );
+        if (sudahAda) {
+          setModal({ type: 'alert', icon: 'error', msg: 'Data lembur pada tanggal tersebut sudah ada. Silakan muat ulang halaman.' });
+          return;
+        }
+
+        const { error } = await supabase.from('data_lembur').insert([
+          { ...payload, id_karyawan: user.id_karyawan, nama: user.nama_karyawan, tanggal_lembur: tgl },
+        ]);
+        if (error) throw error;
+        setModal({ type: 'alert', icon: 'success', msg: 'Mantap! Data lembur berhasil dikirim dan menunggu persetujuan HRD.' });
+      }
       setTimeout(() => { window.location.reload(); }, 2000);
     } catch {
       setModal({ type: 'alert', icon: 'error', msg: 'Gagal terhubung ke server. Silakan coba lagi nanti.' });

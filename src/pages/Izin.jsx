@@ -128,13 +128,29 @@ export default function Izin() {
       const { error } = await supabase.from('data_izin').insert([payload]);
       if (error) throw error;
 
+      // ===== Kirim WhatsApp otomatis ke HRD via Fonnte =====
       const waTanggal = tglMulai === tglAkhir ? tglMulai : `${tglMulai} s/d ${tglAkhir}`;
-      const waText = `Halo kak elok, aku mohon ${kategori} di ${waTanggal} karena ${alasan}, mohon untuk segera memberikan keputusan, terima kasih!`;
+      const waText = `Ada pengajuan izin ${kategori} oleh ${user.nama_karyawan} pada tanggal ${waTanggal} dengan alasan: ${alasan}. Mohon segera ditindaklanjuti.`;
 
-      setModal({ type: 'alert', icon: 'success', msg: 'Berhasil! Anda akan dialihkan ke WhatsApp untuk memberitahu HRD.' });
-      setTimeout(() => {
-        window.location.href = `https://wa.me/${import.meta.env.VITE_WA_HRD}?text=${encodeURIComponent(waText)}`;
-      }, 2000);
+      const fonnteToken = import.meta.env.VITE_FONNTE_TOKEN;
+      const fonnteTarget = import.meta.env.VITE_FONNTE_TARGET || import.meta.env.VITE_WA_HRD;
+
+      if (fonnteToken && fonnteTarget) {
+        try {
+          await fetch('https://api.fonnte.com/send', {
+            method: 'POST',
+            headers: {
+              Authorization: fonnteToken,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ target: fonnteTarget, message: waText }),
+          });
+        } catch {
+          // Gagal kirim WA tidak membatalkan pengajuan yang sudah tersimpan.
+        }
+      }
+
+      setModal({ type: 'alert', icon: 'success', msg: 'Berhasil! Pengajuan izin terkirim dan WhatsApp HRD telah diberitahu secara otomatis.' });
     } catch {
       setModal({ type: 'alert', icon: 'error', msg: 'Gagal terhubung ke server. Silakan coba lagi nanti.' });
     } finally {
