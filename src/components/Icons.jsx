@@ -2,6 +2,8 @@
 // Size controlled via CSS (default inherits currentColor + 1em).
 
 const base = {
+  width: 20,
+  height: 20,
   fill: 'none',
   stroke: 'currentColor',
   strokeWidth: 1.8,
@@ -199,5 +201,70 @@ export const IconCog = (p) => (
   <svg viewBox="0 0 24 24" {...base} {...p}>
     <circle cx="12" cy="12" r="3" />
     <path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1 1.55V21a2 2 0 1 1-4 0v-.09A1.7 1.7 0 0 0 9 19.4a1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-1.55-1H3a2 2 0 1 1 0-4h.09A1.7 1.7 0 0 0 4.6 9a1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-1.55V3a2 2 0 1 1 4 0v.09a1.7 1.7 0 0 0 1 1.55 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.87 1.7 1.7 0 0 0 1.55 1H21a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.55 1Z" />
+  </svg>
+);
+
+export const IconChevronRight = (p) => (
+  <svg viewBox="0 0 24 24" {...base} {...p}>
+    <path d="m9 18 6-6-6-6" />
+  </svg>
+);
+
+export const IconArrowRight = (p) => (
+  <svg viewBox="0 0 24 24" {...base} {...p}>
+    <path d="M5 12h14M12 5l7 7-7 7" />
+  </svg>
+);
+
+export const IconArrowLeft = (p) => (
+  <svg viewBox="0 0 24 24" {...base} {...p}>
+    <path d="M19 12H5M12 19l-7-7 7-7" />
+  </svg>
+);
+
+export const IconChevronLeft = (p) => (
+  <svg viewBox="0 0 24 24" {...base} {...p}>
+    <path d="m15 18-6-6 6-6" />
+  </svg>
+);
+
+export const IconSparkles = (p) => (
+  <svg viewBox="0 0 24 24" {...base} {...p}>
+    <path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3L12 3z" />
+  </svg>
+);
+
+export const IconActivity = (p) => (
+  <svg viewBox="0 0 24 24" {...base} {...p}>
+    <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+  </svg>
+);
+
+export const IconCalendarCheck = (p) => (
+  <svg viewBox="0 0 24 24" {...base} {...p}>
+    <rect x="3" y="4" width="18" height="18" rx="3" />
+    <path d="M16 2v4M8 2v4M3 10h18" />
+    <path d="m9 16 2 2 4-4" />
+  </svg>
+);
+
+export const IconBriefcase = (p) => (
+  <svg viewBox="0 0 24 24" {...base} {...p}>
+    <rect x="2" y="7" width="20" height="14" rx="2" />
+    <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" />
+  </svg>
+);
+
+export const IconSort = (p) => (
+  <svg viewBox="0 0 24 24" {...base} {...p}>
+    <path d="m3 16 4 4 4-4M7 20V4M21 8l-4-4-4 4M17 4v16" />
+  </svg>
+);
+
+export const IconLayers = (p) => (
+  <svg viewBox="0 0 24 24" {...base} {...p}>
+    <path d="m12 2 10 5-10 5L2 7l10-5Z" />
+    <path d="m2 12 10 5 10-5" />
+    <path d="m2 17 10 5 10-5" />
   </svg>
 );

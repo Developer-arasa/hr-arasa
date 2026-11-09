@@ -1,39 +1,67 @@
-# Rekap Lembur Otomatis (Jam 10:00 WIB)
+# Rekap Lembur Otomatis (Jam 11:00 WIB di Server Self-Hosted)
 
-Fitur ini mengirim **rekap pengajuan lembur harian** ke WhatsApp HRD secara otomatis
-setiap hari pukul 10:00 pagi, berisi total pengajuan + daftar siapa saja.
+Fitur ini mengirim **rekap pengajuan lembur harian** ke WhatsApp HRD secara otomatis setiap hari pukul **11:00 WIB**, berisi total pengajuan + daftar karyawan yang mengajukan lembur.
 
-## Cara kerja
+Sistem menggunakan arsitektur **Hybrid WhatsApp**:
+1. Mengirim pesan via **Akasha WhatsApp Gateway** (*self-hosted*).
+2. Jika server Akasha offline / gagal, otomatis *fallback* mengirim via **Fonnte**.
 
-1. GitHub Actions menjalankan cron setiap hari jam 10:00 WIB (03:00 UTC).
-2. Workflow menjalankan `scripts/rekap-lembur.mjs`.
-3. Skrip membaca data lembur hari ini dari Supabase (status PENDING/DISETUJUI),
-   lalu mengirim ringkasan ke WhatsApp HRD via Fonnte.
+---
 
-## Langkah setup (sekali saja)
+## 🖥️ Setup Cron di Server Self-Hosted
 
-### 1. Tambahkan GitHub Secrets
+Cron dijalankan langsung di server *self-hosted* kamu (tempat Akasha Gateway berjalan) sehingga tepat waktu dan tidak bergantung pada cloud scheduler luar.
 
-Buka repo di GitHub → **Settings → Secrets and variables → Actions → New repository secret**.
-Tambahkan 4 secret berikut:
+### 1. Pastikan Node.js (v18+) terinstall di server:
+```bash
+node -v
+```
 
-| Nama secret | Isi |
-|---|---|
-| `SUPABASE_URL` | URL project Supabase (sama seperti `VITE_SUPABASE_URL`) |
-| `SUPABASE_KEY` | anon/public key Supabase (sama seperti `VITE_SUPABASE_KEY`) |
-| `FONNTE_TOKEN` | token Fonnte Anda |
-| `FONNTE_TARGET` | nomor WA HRD, contoh `628155138385` |
+### 2. Buat file `.env` di folder proyek di server:
+```env
+SUPABASE_URL=https://dhlmzugrqvrmoicbnmpn.supabase.co
+SUPABASE_KEY=sb_publishable_4e2ckBZ-OzOaF4LBIS1ZTQ_y6Ve1AOh
+WA_TARGET=628155138385
 
-### 2. Aktifkan workflow
+# Primary Gateway (Akasha)
+WA_GATEWAY_URL=https://akasha.tail5ad5ce.ts.net/api/send
+WA_GATEWAY_TOKEN=device_Web_HR_8ce34e0af211f81a
 
-Setelah file `.github/workflows/rekap-lembur.yml` ter-push ke repo, workflow
-otomatis terdaftar. Untuk tes cepat, buka tab **Actions → Rekap Lembur Harian →
-Run workflow** (manual trigger).
+# Fallback Gateway (Fonnte jika Akasha offline)
+FONNTE_TOKEN=q5cvmm35yg8F3SKGYZMS
+```
+*(Skrip `rekap-lembur.mjs` sudah otomatis membaca file `.env` atau `.env.local` saat dijalankan).*
 
-## Catatan penting
+### 3. Uji Coba Manual:
+```bash
+node scripts/rekap-lembur.mjs
+```
 
-- **Repo harus publik** agar cron GitHub Actions berjalan tepat waktu.
-  Untuk repo privat, jadwal cron bisa tertunda/tidak terjamin — sebaiknya
-  pertimbangkan cron-job.org atau upgrade.
-- Token Fonnte tersimpan aman di GitHub Secrets, TIDAK masuk ke browser/app.
-- Zona waktu rekap memakai WIB (UTC+7).
+### 4. Daftarkan di Crontab Linux (Jam 11:00 Siang WIB):
+Buka crontab di terminal server:
+```bash
+crontab -e
+```
+
+Tambahkan baris berikut di paling bawah:
+```cron
+# Jika timezone server Anda sudah WIB (Asia/Jakarta):
+0 11 * * * cd /path/ke/arasahr && /usr/bin/node scripts/rekap-lembur.mjs >> /path/ke/arasahr/rekap-lembur.log 2>&1
+
+# Atau jika timezone server menggunakan UTC (04:00 UTC = 11:00 WIB):
+# 0 4 * * * cd /path/ke/arasahr && /usr/bin/node scripts/rekap-lembur.mjs >> /path/ke/arasahr/rekap-lembur.log 2>&1
+```
+
+*(Opsi lain jika server menggunakan **PM2**)*:
+```bash
+pm2 start scripts/rekap-lembur.mjs --name "rekap-lembur" --cron "0 11 * * *" --no-autorestart
+```
+
+---
+
+## 🔍 Log & Troubleshooting
+- Jika Akasha Gateway aktif, log akan menampilkan:
+  `[rekap-lembur] SUKSES: Pesan terkirim via Akasha Gateway. Job ID: ...`
+- Jika Akasha Gateway offline atau token bermasalah:
+  `[rekap-lembur] Menjalankan fallback: Mengirim rekap ke ... via Fonnte...`
+  `[rekap-lembur] SUKSES: Rekap lembur berhasil dikirim via Fonnte (Fallback).`

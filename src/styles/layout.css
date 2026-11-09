@@ -1,6 +1,6 @@
 /* ============================================================
-   LAYOUT — Shell: sidebar (desktop) + bottom dock (mobile).
-   Apple-inspired, broken-white + crimson.
+   LAYOUT — Modern Adaptive Shell (Desktop Sidebar + Mobile Dock)
+   Ultra Responsive: Mobile, Tablet, Laptop, Desktop
    ============================================================ */
 
 .app-shell {
@@ -8,22 +8,23 @@
   background: var(--bg);
   color: var(--text-dark);
   font-family: var(--font-family);
+  position: relative;
+  overflow-x: hidden;
 }
 
 .app-container {
   display: flex;
   min-height: 100vh;
+  width: 100%;
 }
 
-/* ===== Sidebar (desktop) ===== */
+/* ===== Sidebar (Desktop & Laptop) ===== */
 .app-navbar {
-  width: 264px;
+  width: 270px;
   flex-shrink: 0;
-  background: var(--surface-glass-strong);
-  backdrop-filter: blur(28px) saturate(1.4);
-  -webkit-backdrop-filter: blur(28px) saturate(1.4);
+  background: var(--surface);
   border-right: 1px solid var(--border);
-  padding: var(--space-7) var(--space-4) var(--space-6);
+  padding: var(--space-6) var(--space-4) var(--space-6);
   display: flex;
   flex-direction: column;
   gap: var(--space-5);
@@ -31,183 +32,375 @@
   top: 0;
   height: 100vh;
   box-sizing: border-box;
+  z-index: 50;
+  box-shadow: 4px 0 24px -10px rgba(15, 23, 42, 0.03);
 }
 
 .navbar-brand {
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  padding: 0 var(--space-2) var(--space-6);
+  padding: var(--space-2) var(--space-2) var(--space-4);
+  border-bottom: 1px solid var(--border-soft);
 }
 
 .brand-mark {
-  width: 40px;
-  height: 40px;
-  border-radius: 12px;
-  background: linear-gradient(135deg, var(--accent), var(--accent-3));
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: var(--grad-fresh);
   display: grid;
   place-items: center;
   color: #fff;
-  box-shadow: 0 8px 20px var(--accent-glow);
+  box-shadow: 0 8px 18px -2px rgba(6, 182, 212, 0.35);
   flex-shrink: 0;
+  transition: transform var(--dur-base) var(--ease-spring);
+}
+
+.brand-mark:hover {
+  transform: scale(1.05) rotate(3deg);
 }
 
 .brand-mark svg {
-  width: 22px;
-  height: 22px;
+  width: 24px;
+  height: 24px;
 }
 
 .navbar-brand .brand-name {
-  font-size: var(--font-size-md);
+  font-size: 17px;
   font-weight: 800;
   color: var(--text-heading);
   letter-spacing: -0.4px;
   margin: 0;
-  line-height: 1.15;
+  line-height: 1.2;
 }
 
 .navbar-brand .brand-sub {
-  font-size: var(--font-size-xs);
+  font-size: 11px;
   color: var(--text-muted);
-  font-weight: 500;
-  margin: 0;
-  letter-spacing: 0.2px;
+  font-weight: 600;
+  margin: 2px 0 0;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
 }
 
 .navbar-links {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
+  flex: 1;
 }
 
 .nav-link {
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  padding: 11px 14px;
-  border-radius: 14px;
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
   text-decoration: none;
   color: var(--text-muted);
   font-size: var(--font-size-base);
   font-weight: 600;
-  letter-spacing: -0.1px;
+  letter-spacing: -0.2px;
   position: relative;
   transition:
-    background-color var(--dur-base) var(--ease-smooth),
+    background var(--dur-base) var(--ease-smooth),
     color var(--dur-base) var(--ease-smooth),
-    transform var(--dur-base) var(--ease-smooth);
+    transform var(--dur-fast) var(--ease-smooth),
+    box-shadow var(--dur-base) var(--ease-smooth);
 }
 
 .nav-link svg {
   width: 20px;
   height: 20px;
   flex-shrink: 0;
+  transition: transform var(--dur-fast) var(--ease-smooth);
 }
 
 .nav-link:hover {
-  background: var(--surface-soft);
+  background: var(--bg-soft);
   color: var(--text-heading);
-  transform: translateX(2px);
+  transform: translateX(3px);
+}
+
+.nav-link:hover svg {
+  transform: scale(1.1);
+  color: var(--accent);
 }
 
 .nav-link.active {
-  background: var(--accent);
+  background: var(--grad-primary);
   color: #fff;
-  box-shadow: 0 10px 24px var(--accent-glow);
+  box-shadow: 0 8px 20px -3px var(--accent-glow);
+}
+
+.nav-link.active svg {
+  color: #fff;
+  transform: none;
 }
 
 .nav-link.active:hover {
-  background: var(--accent-2);
+  background: var(--grad-primary);
   color: #fff;
+  transform: none;
 }
 
+/* User Profile card at sidebar bottom */
 .navbar-footer {
   margin-top: auto;
-  padding-top: var(--space-4);
-  border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
 }
 
-/* ===== Main content ===== */
+.navbar-user-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: var(--bg-soft);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-soft);
+}
+
+.navbar-user-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  background: var(--grad-fresh);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  font-size: 15px;
+  flex-shrink: 0;
+  box-shadow: 0 4px 10px rgba(6, 182, 212, 0.25);
+}
+
+.navbar-user-info {
+  min-width: 0;
+  flex: 1;
+}
+
+.navbar-user-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-heading);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.navbar-user-role {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.navbar-logout-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 14px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--dur-base) var(--ease-smooth);
+}
+
+.navbar-logout-btn:hover {
+  background: var(--danger-bg);
+  border-color: var(--danger-border);
+  color: var(--danger-text);
+}
+
+/* ===== Main Content ===== */
 .app-content {
   flex: 1;
-  padding: var(--space-8) var(--space-8) var(--space-10);
+  padding: var(--space-7) var(--space-8) var(--space-10);
   box-sizing: border-box;
-  max-width: 1120px;
+  max-width: 1280px;
   width: 100%;
   margin: 0 auto;
 }
 
-.page-header {
-  margin-bottom: var(--space-7);
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: var(--space-4);
-  flex-wrap: wrap;
+/* ===== Fluid Rubber-Band / Spring Page & Subtab Transitions ===== */
+.page-transition-wrapper,
+.page-rubber-bounce {
+  animation: pageSpringRubber 0.48s cubic-bezier(0.18, 0.9, 0.22, 1) forwards;
+  transform-origin: 50% 8%;
+  will-change: transform, opacity;
 }
 
-.page-title {
-  font-size: var(--font-size-xl);
-  font-weight: 800;
-  color: var(--text-heading);
-  letter-spacing: -1px;
-  margin: 0;
-  line-height: 1.1;
+@keyframes pageSpringRubber {
+  0% {
+    opacity: 0;
+    transform: translateY(32px) scale(0.90, 1.18);
+    filter: blur(3px);
+  }
+  42% {
+    opacity: 1;
+    transform: translateY(-8px) scale(1.06, 0.94);
+    filter: blur(0);
+  }
+  72% {
+    transform: translateY(2.5px) scale(0.99, 1.015);
+  }
+  88% {
+    transform: translateY(-0.8px) scale(1.005, 0.995);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1, 1);
+  }
 }
 
-.page-subtitle {
-  font-size: var(--font-size-md);
-  color: var(--text-muted);
-  font-weight: 500;
-  margin: var(--space-2) 0 0;
-  letter-spacing: -0.1px;
+/* Subtab switching spring / stretch animation */
+.subtab-spring-enter {
+  animation: subtabJellySnap 0.44s cubic-bezier(0.25, 1.35, 0.5, 1) forwards;
+  transform-origin: 50% 12%;
+  will-change: transform, opacity;
 }
 
-.header-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-  margin-top: var(--space-4);
+@keyframes subtabJellySnap {
+  0% {
+    opacity: 0;
+    transform: translateY(24px) scale(0.88, 1.20);
+    filter: blur(2px);
+  }
+  45% {
+    opacity: 1;
+    transform: translateY(-6px) scale(1.08, 0.93);
+    filter: blur(0);
+  }
+  75% {
+    transform: translateY(2px) scale(0.98, 1.02);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1, 1);
+  }
 }
 
-.meta-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: var(--font-size-xs);
-  font-weight: 600;
-  color: var(--accent-2);
-  background: var(--accent-soft);
-  border: 1px solid var(--accent-border);
-  border-radius: 999px;
-  padding: 6px 13px;
-  white-space: nowrap;
+/* Segmented Tab Pill Active Jelly Spring */
+.segmented-tab-btn,
+.segmented-pill-btn {
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
-/* ===== Bottom dock (mobile) ===== */
+.segmented-tab-btn.active,
+.segmented-pill-btn.active {
+  animation: tabPillJelly 0.38s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes tabPillJelly {
+  0% {
+    transform: scale(0.88, 1.16);
+  }
+  50% {
+    transform: scale(1.07, 0.94);
+  }
+  75% {
+    transform: scale(0.99, 1.01);
+  }
+  100% {
+    transform: scale(1, 1);
+  }
+}
+
+/* Staggered spring wave for list items */
+.spring-list-item {
+  animation: springListItem 0.42s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  transform-origin: 50% 0%;
+}
+
+@keyframes springListItem {
+  0% {
+    opacity: 0;
+    transform: translateY(20px) scale(0.92, 1.12);
+  }
+  55% {
+    opacity: 1;
+    transform: translateY(-4px) scale(1.03, 0.97);
+  }
+  80% {
+    transform: translateY(1.5px) scale(0.995, 1.005);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1, 1);
+  }
+}
+
+.spring-list-item:nth-child(1) { animation-delay: 0.03s; }
+.spring-list-item:nth-child(2) { animation-delay: 0.06s; }
+.spring-list-item:nth-child(3) { animation-delay: 0.09s; }
+.spring-list-item:nth-child(4) { animation-delay: 0.12s; }
+.spring-list-item:nth-child(5) { animation-delay: 0.15s; }
+.spring-list-item:nth-child(6) { animation-delay: 0.18s; }
+.spring-list-item:nth-child(n+7) { animation-delay: 0.21s; }
+
+/* Tactile Elastic Touch Feedback on buttons & interactive cards */
+button,
+.btn,
+.nav-link,
+.bottom-link,
+.segmented-tab-btn,
+.segmented-pill-btn,
+.focal-topup-btn,
+.biodata-edit-btn,
+.biodata-row-item.interactive {
+  transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease, background-color 0.18s ease;
+}
+
+button:active,
+.btn:active,
+.bottom-link:active,
+.segmented-tab-btn:active,
+.segmented-pill-btn:active,
+.focal-topup-btn:active,
+.biodata-edit-btn:active,
+.biodata-row-item.interactive:active {
+  transform: scale(0.91, 0.89) !important;
+  transition: transform 0.06s cubic-bezier(0.2, 0.8, 0.4, 1) !important;
+}
+
+/* ===== Floating Bottom Dock (Mobile & Small Tablet) ===== */
 .app-bottom-nav {
   display: none;
   position: fixed;
-  bottom: 16px;
+  bottom: 18px;
   left: 50%;
   transform: translateX(-50%);
-  background: var(--surface-glass-strong);
-  backdrop-filter: blur(28px) saturate(1.4);
-  -webkit-backdrop-filter: blur(28px) saturate(1.4);
-  border: 1px solid var(--border);
-  border-radius: 24px;
-  padding: 8px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(24px) saturate(1.5);
+  -webkit-backdrop-filter: blur(24px) saturate(1.5);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  border-radius: var(--radius-full);
+  padding: 6px 10px;
   z-index: 1000;
-  box-shadow: var(--shadow-lg);
+  box-shadow: 0 20px 40px -10px rgba(15, 23, 42, 0.16), 0 4px 12px rgba(15, 23, 42, 0.05);
   box-sizing: border-box;
   width: calc(100% - 32px);
-  max-width: 420px;
+  max-width: 380px;
 }
 
 .app-bottom-nav .bottom-links {
   display: flex;
+  align-items: center;
   justify-content: space-around;
-  gap: 4px;
+  gap: 6px;
 }
 
 .bottom-link {
@@ -216,22 +409,18 @@
   align-items: center;
   gap: 3px;
   padding: 8px 14px;
-  border-radius: 16px;
+  border-radius: var(--radius-full);
   text-decoration: none;
   color: var(--text-muted);
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 600;
-  letter-spacing: 0.1px;
   flex: 1;
-  transition:
-    background-color var(--dur-base) var(--ease-smooth),
-    color var(--dur-base) var(--ease-smooth),
-    transform var(--dur-base) var(--ease-morph);
+  transition: all var(--dur-base) var(--ease-smooth);
 }
 
 .bottom-link svg {
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
 }
 
 .bottom-link:hover {
@@ -239,13 +428,26 @@
 }
 
 .bottom-link.active {
-  background: var(--accent);
+  background: var(--grad-primary);
   color: #fff;
-  box-shadow: 0 8px 18px var(--accent-glow);
+  box-shadow: 0 4px 14px var(--accent-glow);
   transform: translateY(-2px);
+  animation: bottomPillJelly 0.44s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-/* ===== Responsive ===== */
+/* ===== Responsive Breakpoints ===== */
+/* Tablets (769px to 1024px) */
+@media (max-width: 1024px) {
+  .app-navbar {
+    width: 230px;
+    padding: var(--space-5) var(--space-3);
+  }
+  .app-content {
+    padding: var(--space-6) var(--space-5) var(--space-8);
+  }
+}
+
+/* Mobile & Small Tablets (<= 768px) */
 @media (max-width: 768px) {
   .app-navbar {
     display: none;
@@ -254,11 +456,13 @@
     display: block;
   }
   .app-content {
-    padding: var(--space-6) var(--space-4) 120px;
-  }
-  .page-title {
-    font-size: 26px;
-    letter-spacing: -0.8px;
+    padding: var(--space-4) var(--space-4) 100px;
   }
 }
 
+/* Small Phones (<= 480px) */
+@media (max-width: 480px) {
+  .app-content {
+    padding: var(--space-3) var(--space-3) 95px;
+  }
+}

@@ -4,9 +4,9 @@ import { IconHome, IconDoc, IconClock, IconUser, IconLogout, IconBrand } from '.
 
 const NAV_ITEMS = [
   { to: '/dashboard', label: 'Dashboard', icon: IconHome },
-  { to: '/izin', label: 'Izin', icon: IconDoc },
+  { to: '/izin', label: 'Izin & Cuti', icon: IconDoc },
   { to: '/lembur', label: 'Lembur', icon: IconClock },
-  { to: '/profil', label: 'Profil', icon: IconUser },
+  { to: '/profil', label: 'Profil Saya', icon: IconUser },
 ];
 
 export default function Navbar() {
@@ -40,37 +40,24 @@ export default function Navbar() {
 
       <div className="navbar-footer">
         {user && (
-          <div className="navbar-user" style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '0 12px 12px' }}>
-            <div
-              style={{
-                width: 32,
-                height: 32,
-                borderRadius: 10,
-                background: 'var(--accent-soft)',
-                color: 'var(--accent-2)',
-                display: 'grid',
-                placeItems: 'center',
-                fontWeight: 700,
-                fontSize: 'var(--font-size-sm)',
-              }}
-            >
+          <div className="navbar-user-card">
+            <div className="navbar-user-avatar">
               {(user.nama_karyawan || '?').charAt(0).toUpperCase()}
             </div>
-            <div style={{ minWidth: 0 }}>
-              <div style={{ fontSize: 'var(--font-size-sm)', fontWeight: 700, color: 'var(--text-dark)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            <div className="navbar-user-info">
+              <div className="navbar-user-name">
                 {user.nama_karyawan}
               </div>
-              <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--text-muted)' }}>
-                {user.jabatan || user.id_karyawan || 'Karyawan'}
+              <div className="navbar-user-role">
+                {user.jabatan || user.departemen || 'Karyawan'}
               </div>
             </div>
           </div>
         )}
-        <button className="nav-link" onClick={logout} style={{ width: '100%', background: 'none', border: 'none', cursor: 'pointer' }}>
+        <button className="navbar-logout-btn" onClick={logout}>
           <IconLogout /> Keluar
         </button>
       </div>
     </nav>
   );
 }
-

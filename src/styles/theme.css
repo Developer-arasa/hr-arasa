@@ -1,66 +1,96 @@
 /* ============================================================
-   THEME — Design tokens: warna, font, spacing, radius, shadow.
-   Palet: broken white + deep crimson red (Apple-inspired).
+   THEME — Design Tokens: Fresh, Modern, Ultra-Professional
+   Inspirasi: Modern Telecom / Fintech UI (Clean, Airy, Vibrant)
+   Palet: Electric Blue, Cyan Sky, Fresh Emerald Mint, Slate.
    ============================================================ */
 
 :root {
-  /* ===== Warna brand — Deep Crimson Red ===== */
-  --accent: #c1121f;
-  --accent-2: #9d0f19;
-  --accent-3: #7a0c14;
-  --accent-soft: #fbe9ea;
-  --accent-border: #f4c9cc;
-  --accent-glow: rgba(193, 18, 31, 0.18);
+  /* ===== Brand & Vibrant Accents ===== */
+  --accent: #2563eb;               /* Royal Electric Blue */
+  --accent-hover: #1d4ed8;
+  --accent-2: #0284c7;             /* Vibrant Sky Cyan */
+  --accent-3: #0f172a;             /* Deep Slate Contrast */
+  --accent-mint: #10b981;          /* Fresh Mint Green */
+  --accent-mint-light: #34d399;
+  --accent-soft: #eff6ff;
+  --accent-border: #bfdbfe;
+  --accent-glow: rgba(37, 99, 235, 0.22);
+  --accent-glow-mint: rgba(16, 185, 129, 0.25);
 
-  /* ===== Netral (broken white base) ===== */
-  --bg: #faf9f7;
-  --bg-soft: #f4f2ee;
+  /* Gradients */
+  --grad-primary: linear-gradient(135deg, #1d4ed8 0%, #2563eb 40%, #0284c7 100%);
+  --grad-fresh: linear-gradient(135deg, #2563eb 0%, #06b6d4 50%, #10b981 100%);
+  --grad-mint: linear-gradient(135deg, #059669 0%, #10b981 60%, #34d399 100%);
+  --grad-hero: linear-gradient(135deg, #1e40af 0%, #2563eb 45%, #0284c7 75%, #059669 100%);
+  --grad-hero-mesh: radial-gradient(at 0% 0%, rgba(37,99,235,0.9) 0px, transparent 50%),
+                    radial-gradient(at 100% 0%, rgba(6,182,212,0.85) 0px, transparent 50%),
+                    radial-gradient(at 100% 100%, rgba(16,185,129,0.7) 0px, transparent 50%),
+                    #1d4ed8;
+
+  /* ===== Netral & Surfaces ===== */
+  --bg: #f8fafc;                   /* Slate 50 ultra clean */
+  --bg-soft: #f1f5f9;              /* Slate 100 */
   --surface: #ffffff;
-  --surface-glass: rgba(255, 255, 255, 0.72);
-  --surface-glass-strong: rgba(255, 255, 255, 0.86);
-  --surface-soft: #f6f5f2;
+  --surface-glass: rgba(255, 255, 255, 0.78);
+  --surface-glass-strong: rgba(255, 255, 255, 0.92);
+  --surface-soft: #f8fafc;
+  --surface-card-subtle: #fbfcfe;
 
-  --text-heading: #161412;
-  --text-dark: #2b2825;
-  --text-muted: #6f6a64;
-  --text-faint: #a29c94;
+  /* Typography Colors */
+  --text-heading: #0f172a;         /* Slate 900 */
+  --text-dark: #1e293b;            /* Slate 800 */
+  --text-muted: #64748b;           /* Slate 500 */
+  --text-faint: #94a3b8;           /* Slate 400 */
 
-  /* ===== Border ===== */
-  --border: #eae6df;
-  --border-strong: #ddd7cd;
+  /* Borders */
+  --border: #e2e8f0;               /* Slate 200 */
+  --border-soft: #f1f5f9;          /* Slate 100 */
+  --border-strong: #cbd5e1;        /* Slate 300 */
+  --border-accent: rgba(37, 99, 235, 0.2);
 
-  /* ===== Status ===== */
-  --success-bg: #e7f4ec;
-  --success-text: #1d6b43;
-  --warning-bg: #fdf3df;
-  --warning-text: #a16207;
-  --danger-bg: #fce9ea;
-  --danger-text: #9d0f19;
-  --info-bg: #e9effa;
-  --info-text: #2b4b8f;
+  /* Status Colors */
+  --success-bg: #ecfdf5;
+  --success-text: #047857;
+  --success-border: #a7f3d0;
+  
+  --warning-bg: #fffbeb;
+  --warning-text: #b45309;
+  --warning-border: #fde68a;
 
-  /* ===== Radius (Apple-like) ===== */
+  --danger-bg: #fef2f2;
+  --danger-text: #b91c1c;
+  --danger-border: #fecaca;
+
+  --info-bg: #eff6ff;
+  --info-text: #1d4ed8;
+  --info-border: #bfdbfe;
+
+  /* ===== Radius (Modern Smooth Squircles) ===== */
+  --radius-xs: 8px;
   --radius-sm: 12px;
   --radius-md: 18px;
   --radius-lg: 24px;
   --radius-xl: 32px;
   --radius-2xl: 40px;
+  --radius-full: 9999px;
 
-  /* ===== Shadow ===== */
-  --shadow-sm: 0 1px 2px rgba(22, 20, 18, 0.03), 0 2px 8px rgba(22, 20, 18, 0.04);
-  --shadow-md: 0 8px 24px rgba(22, 20, 18, 0.06), 0 2px 6px rgba(22, 20, 18, 0.04);
-  --shadow-lg: 0 24px 60px rgba(22, 20, 18, 0.10), 0 8px 20px rgba(22, 20, 18, 0.05);
+  /* ===== Shadows (Soft Depth & Ambient Glow) ===== */
+  --shadow-xs: 0 1px 2px rgba(15, 23, 42, 0.04);
+  --shadow-sm: 0 2px 8px -2px rgba(15, 23, 42, 0.04), 0 1px 4px -1px rgba(15, 23, 42, 0.02);
+  --shadow-md: 0 12px 28px -6px rgba(15, 23, 42, 0.06), 0 4px 12px -2px rgba(15, 23, 42, 0.03);
+  --shadow-lg: 0 20px 42px -8px rgba(15, 23, 42, 0.08), 0 8px 18px -4px rgba(15, 23, 42, 0.03);
+  --shadow-float: 0 24px 50px -12px rgba(37, 99, 235, 0.22);
 
-  /* ===== Font — Inter (single family) ===== */
-  --font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  /* ===== Typography ===== */
+  --font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-size-xs: 11px;
   --font-size-sm: 13px;
   --font-size-base: 14px;
   --font-size-md: 16px;
   --font-size-lg: 20px;
-  --font-size-xl: 32px;
-  --font-size-2xl: 44px;
-  --font-size-3xl: 56px;
+  --font-size-xl: 28px;
+  --font-size-2xl: 38px;
+  --font-size-3xl: 48px;
 
   /* ===== Spacing ===== */
   --space-1: 4px;
@@ -74,10 +104,11 @@
   --space-9: 48px;
   --space-10: 64px;
 
-  /* ===== Motion (morph, ease-in-out) ===== */
+  /* ===== Animations & Motion ===== */
   --ease-morph: cubic-bezier(0.34, 1.56, 0.64, 1);
-  --ease-smooth: cubic-bezier(0.45, 0, 0.15, 1);
-  --dur-fast: 160ms;
-  --dur-base: 300ms;
-  --dur-slow: 500ms;
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  --dur-fast: 150ms;
+  --dur-base: 260ms;
+  --dur-slow: 450ms;
 }

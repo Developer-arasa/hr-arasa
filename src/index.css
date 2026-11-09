@@ -5,7 +5,7 @@
    UI: styles/components.css
    ============================================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
 @import './styles/theme.css';
 @import './styles/layout.css';
@@ -54,22 +54,9 @@ textarea {
     opacity var(--dur-base) var(--ease-smooth);
 }
 
-/* Staggered page entrance (route transitions) */
+/* Page & subtab transitions are powered by fluid rubber-band physics in styles/layout.css */
 .page-enter {
-  animation: pageIn var(--dur-slow) var(--ease-smooth) both;
-}
-
-@keyframes pageIn {
-  from {
-    opacity: 0;
-    transform: translateY(16px) scale(0.995);
-    filter: blur(6px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-    filter: blur(0);
-  }
+  width: 100%;
 }
 
 @keyframes riseIn {
