@@ -31,7 +31,7 @@ export default function Izin() {
   const user = useAuthStore((s) => s.user);
 
   const [tab, setTab] = useState('pengajuan'); // 'pengajuan' | 'riwayat'
-  const [kategori, setKategori] = useState('Cuti Tahunan');
+  const [kategori, setKategori] = useState('');
   const [tglMulai, setTglMulai] = useState('');
   const [tglAkhir, setTglAkhir] = useState('');
   const [alasan, setAlasan] = useState('');
@@ -420,10 +420,9 @@ export default function Izin() {
               </label>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(110px, 1fr))', gap: 6 }}>
                 {[
-                  { val: 'Cuti Tahunan', icon: IconCalendarCheck, label: 'Cuti Tahunan' },
                   { val: 'Sakit', icon: IconIllness, label: 'Sakit' },
-                  { val: 'Izin', icon: IconPen, label: 'Keperluan' },
-                  { val: 'Abnormal case', icon: IconWarn, label: 'Khusus' },
+                  { val: 'Izin', icon: IconPen, label: 'Izin' },
+                  { val: 'Abnormal case', icon: IconWarn, label: 'Abnormal case' },
                 ].map((opt) => {
                   const isSel = kategori === opt.val;
                   return (
